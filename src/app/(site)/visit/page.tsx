@@ -31,11 +31,11 @@ export default async function VisitPage() {
 
       <div className="container space-y-16 py-12 md:space-y-20 md:py-20">
         <section aria-labelledby="find-h" className="grid gap-8 lg:grid-cols-2">
-          <div>
+          <div className="min-w-0">
             <h2 id="find-h" className="h-section mb-6">{t("visit.map.title")}</h2>
             <VisitMap />
           </div>
-          <div className="lg:pt-[4.5rem]"><Directions /></div>
+          <div className="min-w-0 lg:pt-[4.5rem]"><Directions /></div>
         </section>
 
         <section aria-label={t("visit.hours")}>

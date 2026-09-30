@@ -12,8 +12,7 @@ import type { MessageKey } from "@/i18n/dictionary";
 import { getSlot } from "@/lib/availability";
 import { hkToday } from "@/lib/dates";
 import { calcPrice, validatePromo } from "@/lib/pricing";
-import { saveBooking, useBookings, useDraft, useEvents, useHydrated, useOverrides, usePromos, useRegistrations } from "@/lib/store";
-import { appendToCollection } from "@/lib/store";
+import { appendToCollection, saveBooking, useBookings, useDraft, useEvents, useHydrated, useOverrides, usePromos, useRegistrations } from "@/lib/store";
 import { bookingReference, uid } from "@/lib/utils";
 import { bookingSchema } from "@/lib/validation";
 import type { Booking, DayPeriod, ExperienceId, ParticipantInput, PaymentMethodId } from "@/types";
@@ -26,7 +25,7 @@ import { StepParticipants } from "./StepParticipants";
 import { StepReview } from "./StepReview";
 import { participantFieldId } from "./ParticipantForm";
 import {
-  STEP_COUNT, cleanParticipant, eventOpen, eventPeriod, eventRemaining, fitParticipants, focusFirstError, fromDraft,
+  cleanParticipant, eventOpen, eventPeriod, eventRemaining, fitParticipants, focusFirstError, fromDraft,
   initialState, toDraft, validateContact, validateParticipants, type FlowInit, type FlowState,
 } from "./booking-utils";
 

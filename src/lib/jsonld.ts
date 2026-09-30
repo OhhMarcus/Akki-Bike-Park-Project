@@ -1,13 +1,11 @@
 import { siteConfig } from "@/config/site";
-import { getServerLocale } from "@/i18n/server";
-import type { ParkEvent } from "@/types";
+import type { Locale, ParkEvent } from "@/types";
 
 /**
  * LocalBusiness + SportsActivityLocation. Address/phone/hours are only emitted
  * once verified in src/config/site.ts, so search engines never see placeholders.
  */
-export async function localBusinessJsonLd() {
-  const locale = await getServerLocale();
+export function localBusinessJsonLd(locale: Locale) {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "SportsActivityLocation"],

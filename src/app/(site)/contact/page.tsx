@@ -1,6 +1,7 @@
 import { buildMetadata } from "@/lib/seo";
 import { getServerT } from "@/i18n/server";
-import { ContactForm, parseTopic } from "@/components/contact/ContactForm";
+import { ContactForm } from "@/components/contact/ContactForm";
+import { parseTopic } from "@/components/contact/topics";
 import { ContactInfo } from "@/components/contact/ContactInfo";
 
 export async function generateMetadata() {
