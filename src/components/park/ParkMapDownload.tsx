@@ -12,7 +12,7 @@ import { buildPlaceholderMapSvg } from "./mapSvg";
 
 export function ParkMapDownload() {
   const { t, locale } = useI18n();
-  const { toast } = useToast();
+  const toast = useToast();
   const official = siteConfig.parkMapPdf.available;
 
   return (
