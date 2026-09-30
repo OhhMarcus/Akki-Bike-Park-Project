@@ -29,7 +29,7 @@ export type FlowState = {
   paymentMethod: PaymentMethodId;
 };
 
-export type FlowInit = { exp?: string; event?: string; date?: string; promo?: string };
+export type FlowInit = { exp?: string; event?: string; date?: string; promo?: string; waitlist?: boolean };
 
 export function emptyGuardian(): Guardian {
   return { name: "", relationship: "", phone: "", email: "", consentGiven: false };

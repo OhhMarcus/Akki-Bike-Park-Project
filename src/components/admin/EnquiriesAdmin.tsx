@@ -24,7 +24,9 @@ const tabs: { id: Tab; label: MessageKey }[] = [
   { id: "waitlist", label: "admin.en.waitlist" },
 ];
 
-function StatusSelect<S extends string>({ value, options, label, onChange }: { value: S; options: readonly S[]; label: string; onChange: (s: S) => void }) {
+type StatusKey = "new" | "replied" | "closed" | "contacted" | "quoted" | "won" | "lost" | "waiting" | "notified" | "booked" | "removed";
+
+function StatusSelect<S extends StatusKey>({ value, options, label, onChange }: { value: S; options: readonly S[]; label: string; onChange: (s: S) => void }) {
   const { t } = useI18n();
   return (
     <Select aria-label={label} value={value} onChange={(e) => onChange(e.target.value as S)} className="w-36">
