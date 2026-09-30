@@ -34,6 +34,7 @@ export const proposalMessages = {
   "proposal.hero.linkBooking": m("Booking flow", "預約流程"),
   "proposal.hero.linkAdmin": m("Staff admin", "職員後台"),
   "proposal.hero.credentials": m("Demo admin login", "示範後台登入"),
+  "proposal.hero.password": m("Password", "密碼"),
   "proposal.hero.credentialsNote": m("Demo credentials only. Data stays in your browser and nothing is charged.", "僅供示範。資料只保存在你的瀏覽器，不會收取任何費用。"),
 
   // Common section labels

@@ -52,7 +52,7 @@ export function Hero() {
               <dd className="break-all font-mono text-bone">{demoAdmin.email}</dd>
             </div>
             <div>
-              <dt className="text-silver-dim">Password</dt>
+              <dt className="text-silver-dim">{t("proposal.hero.password")}</dt>
               <dd className="break-all font-mono text-bone">{demoAdmin.password}</dd>
             </div>
           </dl>

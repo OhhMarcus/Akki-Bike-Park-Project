@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 import { buildMetadata } from "@/lib/seo";
-import { getServerT } from "@/i18n/server";
 import { Hero } from "@/components/home/Hero";
 import { QuickBooking } from "@/components/home/QuickBooking";
 import { AudienceCards } from "@/components/home/AudienceCards";
@@ -17,8 +16,7 @@ const SocialPreview = dynamic(() => import("@/components/home/SocialPreview").th
 const MembershipTeaser = dynamic(() => import("@/components/home/MembershipTeaser").then((m) => m.MembershipTeaser));
 const FinalCTA = dynamic(() => import("@/components/home/FinalCTA").then((m) => m.FinalCTA));
 
-export async function generateMetadata() {
-  const { t, locale } = await getServerT();
+export function generateMetadata() {
   return buildMetadata({
     title: { en: "Mountain Bike Park in Hong Kong", zh: "香港山地單車樂園" },
     description: {
@@ -26,10 +24,6 @@ export async function generateMetadata() {
       zh: "在丫髻山地單車樂園騎行、學習、結識同好。預約首次騎行、報讀教練課程，或帶同團體到訪。",
     },
     path: "/",
-  }).then((meta) => {
-    void t;
-    void locale;
-    return meta;
   });
 }
 

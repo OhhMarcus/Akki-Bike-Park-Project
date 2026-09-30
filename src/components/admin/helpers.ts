@@ -1,4 +1,7 @@
 import { hkToday } from "@/lib/dates";
+import type { BookingStatus } from "@/types";
+
+export const bookingStatuses: BookingStatus[] = ["pending", "confirmed", "checked_in", "completed", "cancelled", "no_show"];
 
 export const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 export const isIsoDate = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v);

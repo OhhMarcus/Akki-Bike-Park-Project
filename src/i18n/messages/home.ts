@@ -4,12 +4,6 @@ const m = (en: string, zh: string): LocalizedText => ({ en, zh });
 
 /** home page strings. Edit both languages side by side. */
 export const homeMessages = {
-  "home.meta.title": m("Mountain Bike Park in Hong Kong", "香港山地單車樂園"),
-  "home.meta.desc": m(
-    "Ride, learn and belong at AKKI Bike Park. Book a first ride, join a coaching programme or bring your group.",
-    "在丫髻山地單車樂園騎行、學習、結識同好。預約首次騎行、報讀教練課程，或帶同團體到訪。",
-  ),
-
   // Hero
   "home.hero.title": m("Ride Hong Kong Differently", "用不一樣的方式騎遍香港"),
   "home.hero.body": m(
@@ -20,8 +14,6 @@ export const homeMessages = {
     "A rider leaning into a banked berm on a trail at AKKI Bike Park",
     "車手在丫髻山地單車樂園的賽道上傾斜過彎",
   ),
-  "home.status.loading": m("Loading", "載入中"),
-  "home.status.hoursTbc": m("Hours to be confirmed", "時間待確認"),
 
   // Quick booking
   "home.qb.title": m("Plan your ride", "計劃你的騎行"),
@@ -90,7 +82,6 @@ export const homeMessages = {
   "home.co.eyebrow": m("Coaching", "教練課程"),
   "home.co.title": m("Learn with us", "與我們一起學習"),
   "home.co.all": m("See all programmes", "查看所有課程"),
-  "home.co.priceFrom": m("per rider", "每位車手"),
 
   // Gallery
   "home.gal.eyebrow": m("Gallery", "相片集"),
