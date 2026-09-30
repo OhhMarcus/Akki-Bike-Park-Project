@@ -1,5 +1,6 @@
 "use client";
 
+import { eventImg } from "@/content/images";
 import Link from "next/link";
 import { CalendarDays, Clock, Users } from "lucide-react";
 import { DemoTag } from "@/components/common/DemoTag";
@@ -42,7 +43,7 @@ export function EventCard({ event, today }: { event: ParkEvent; today: string | 
   const state = eventState(event, today);
   return (
     <article className="surface flex h-full flex-col overflow-hidden rounded-lg border border-graphite-700 bg-graphite-900">
-      <PhotoPlaceholder alt={l(event.title)} className="aspect-[16/9]">
+      <PhotoPlaceholder src={eventImg(event)} alt={l(event.title)} className="aspect-[16/9]">
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <Badge tone="silver" className="bg-ink/70">{t(`evtype.${event.type}`)}</Badge>
           {event.isDemo && <DemoTag className="bg-ink/70" />}

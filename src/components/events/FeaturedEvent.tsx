@@ -1,5 +1,6 @@
 "use client";
 
+import { eventImg } from "@/content/images";
 import Link from "next/link";
 import { CalendarDays, Clock } from "lucide-react";
 import { DemoTag } from "@/components/common/DemoTag";
@@ -17,7 +18,7 @@ export function FeaturedEvent({ event, today, isFeatured }: { event: ParkEvent; 
   const { t, l, date, money } = useI18n();
   return (
     <section aria-labelledby="featured-title" className="grid overflow-hidden rounded-lg border border-graphite-700 bg-graphite-900 lg:grid-cols-2">
-      <PhotoPlaceholder alt={l(event.title)} className="aspect-[16/10] lg:aspect-auto lg:min-h-[26rem]" priority />
+      <PhotoPlaceholder src={eventImg(event)} alt={l(event.title)} className="aspect-[16/10] lg:aspect-auto lg:min-h-[26rem]" priority />
       <div className="flex flex-col gap-5 p-6 md:p-10">
         <div className="flex flex-wrap items-center gap-2">
           <span className="eyebrow">{isFeatured ? t("events.featured") : t("events.next")}</span>

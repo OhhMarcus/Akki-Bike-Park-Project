@@ -1,5 +1,6 @@
 "use client";
 
+import { img } from "@/content/images";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { useI18n } from "@/i18n/provider";
@@ -18,7 +19,7 @@ export function Hero() {
 
   return (
     <section aria-labelledby="home-hero-title" className="relative isolate flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden pb-10 md:pb-12">
-      <PhotoPlaceholder alt={t("home.hero.photoAlt")} priority className="absolute inset-0 -z-20" />
+      <PhotoPlaceholder src={img("hero")} alt={t("home.hero.photoAlt")} priority className="absolute inset-0 -z-20" />
       <div aria-hidden className="absolute inset-0 -z-10 bg-ink/60" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-ink to-transparent" />
 

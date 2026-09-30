@@ -1,5 +1,6 @@
 "use client";
 
+import { eventImg } from "@/content/images";
 import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
@@ -77,7 +78,7 @@ export function EventDetail({ slug }: { slug: string }) {
         </Link>
 
         <header className="mt-4 grid gap-8 lg:grid-cols-2">
-          <PhotoPlaceholder alt={l(event.title)} className="aspect-[16/10] rounded-lg" priority />
+          <PhotoPlaceholder src={eventImg(event)} alt={l(event.title)} className="aspect-[16/10] rounded-lg" priority />
           <div className="flex flex-col justify-center gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone="silver">{t(`evtype.${event.type}`)}</Badge>

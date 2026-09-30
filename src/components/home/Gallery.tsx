@@ -1,5 +1,6 @@
 "use client";
 
+import { img } from "@/content/images";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/i18n/provider";
 import { PhotoPlaceholder } from "@/components/common/PhotoPlaceholder";
@@ -27,7 +28,7 @@ export function Gallery() {
         <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
           {tiles.map((tile, i) => (
             <Reveal key={tile.key} delay={i * 0.04} className={cn("contents")}>
-              <PhotoPlaceholder alt={t(`home.gal.${tile.key}` as MessageKey)} className={cn("rounded-lg", tile.className)} />
+              <PhotoPlaceholder src={img(`gallery-${tile.key}`)} alt={t(`home.gal.${tile.key}` as MessageKey)} className={cn("rounded-lg", tile.className)} />
             </Reveal>
           ))}
         </div>

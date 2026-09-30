@@ -1,5 +1,6 @@
 "use client";
 
+import { img } from "@/content/images";
 import { Instagram } from "@/components/common/SocialIcons";
 import { PhotoPlaceholder } from "@/components/common/PhotoPlaceholder";
 import { SectionHeading } from "@/components/common/SectionHeading";
@@ -23,7 +24,7 @@ export function SocialPreview() {
       <ul className="mt-10 grid grid-cols-3 gap-2 md:grid-cols-6">
         {tiles.map((i) => (
           <li key={i}>
-            <PhotoPlaceholder alt={t("home.so.tile", { i })} caption={t("demo.placeholder")} className="aspect-square rounded-md" />
+            <PhotoPlaceholder src={img(`social-${i}`)} alt={t("home.so.tile", { i })} caption={t("demo.placeholder")} className="aspect-square rounded-md" />
           </li>
         ))}
       </ul>

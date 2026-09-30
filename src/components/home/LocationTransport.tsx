@@ -1,5 +1,6 @@
 "use client";
 
+import { img } from "@/content/images";
 import Link from "next/link";
 import { MapPin, TrainFront } from "lucide-react";
 import { siteConfig } from "@/config/site";
@@ -38,7 +39,7 @@ export function LocationTransport() {
             {t("home.loc.cta")}
           </Link>
         </div>
-        <PhotoPlaceholder alt={t("home.loc.mapAlt")} caption={t("home.loc.mapCaption")} className="aspect-[4/3] rounded-lg" />
+        <PhotoPlaceholder src={img("location-map")} alt={t("home.loc.mapAlt")} caption={t("home.loc.mapCaption")} className="aspect-[4/3] rounded-lg" />
       </div>
     </section>
   );
