@@ -4,8 +4,6 @@ const m = (en: string, zh: string): LocalizedText => ({ en, zh });
 
 /** groups page strings. Edit both languages side by side. */
 export const groupsMessages = {
-  "groups.meta.title": m("Groups & Private Events", "團體及私人活動"),
-  "groups.meta.desc": m("Schools, youth organisations, teams, birthdays and brand events at AKKI Bike Park. Plan your group and request a quote.", "學校、青少年機構、企業團隊、生日派對及品牌活動。規劃你的團體並索取報價。"),
   "groups.eyebrow": m("Groups & events", "團體及活動"),
   "groups.title": m("Ride together", "一起騎"),
   "groups.lead": m("From school sessions to brand launches, we shape a day on the trails around your group.", "由學校活動到品牌發佈，我們為你的團體度身設計一天的山徑體驗。"),
@@ -80,7 +78,6 @@ export const groupsMessages = {
   "groups.form.date": m("Preferred date", "首選日期"),
   "groups.form.addons": m("Add-ons", "附加服務"),
   "groups.form.message": m("Message", "訊息"),
-  "groups.form.select": m("Select a type", "請選擇類型"),
   "groups.form.send": m("Send group enquiry", "提交團體查詢"),
   "groups.form.sending": m("Sending…", "傳送中…"),
   "groups.form.doneTitle": m("Enquiry received", "已收到查詢"),
