@@ -22,7 +22,7 @@ export const segments: Segment[] = [
   {
     key: "school", anchor: "schools", icon: "GraduationCap", priceExp: "school", bookExp: "school",
     blurb: L("Outdoor sessions that get a class moving and building confidence.", "讓全班動起來、建立自信的戶外活動。"),
-    benefits: [L("Outdoor activity beyond the classroom", "走出課室的戶外活動"), L("Beginner-friendly, helmets required for all", "新手友善，全員佩戴頭盔"), L("Clear supervision and safety briefing", "清晰的看管及安全簡介")],
+    benefits: [L("Outdoor activity beyond the classroom", "走出課室的戶外活動"), L("Beginner-friendly, with a helmet for every rider", "新手友善，每位車手均佩戴頭盔"), L("Clear supervision and safety briefing", "清晰的看管及安全簡介")],
     itinerary: [
       { step: "arrival", text: L("Check-in and helmet fitting.", "報到及調校頭盔。") },
       { step: "briefing", text: L("Safety and park rules for the class.", "向全班講解安全及場地規則。") },

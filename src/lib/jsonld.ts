@@ -19,8 +19,9 @@ export function localBusinessJsonLd(locale: Locale) {
   if (siteConfig.address.verified) data.address = { "@type": "PostalAddress", streetAddress: siteConfig.address[locale], addressCountry: "HK" };
   if (siteConfig.contact.verified) {
     data.telephone = siteConfig.contact.phone;
-    data.email = siteConfig.contact.email;
+    if (siteConfig.contact.emailVerified) data.email = siteConfig.contact.email;
   }
+  data.sameAs = [siteConfig.officialSite, siteConfig.social.instagram];
   return data;
 }
 

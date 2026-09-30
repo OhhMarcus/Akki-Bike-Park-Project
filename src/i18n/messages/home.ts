@@ -124,10 +124,10 @@ export const homeMessages = {
   "home.so.note": m("Placeholder tiles. Connect the real feed later.", "預留位置，日後連結真實動態。"),
 
   // Membership
-  "home.mem.eyebrow": m("Membership", "會員"),
-  "home.mem.title": m("Ride more, for less", "多騎多著數"),
-  "home.mem.body": m("Membership options for regular riders and families. Ask us to find the right fit.", "為常客及家庭而設的會員方案，歡迎查詢最適合你的選擇。"),
-  "home.mem.cta": m("Ask about membership", "查詢會員"),
+  "home.mem.eyebrow": m("AKKI Bike Club", "AKKI 單車會"),
+  "home.mem.title": m("Ride with the club", "加入單車會"),
+  "home.mem.body": m("Earn points on eligible spending and move up from Blue to Diamond. Open from age 12; under-18s need guardian consent. Ask AKKI for the current terms.", "合資格消費可賺取積分，由 Blue 升級至 Diamond。12 歲起可申請，未滿 18 歲須有監護人同意。最新條款請向 AKKI 查詢。"),
+  "home.mem.cta": m("Ask about the club", "查詢單車會"),
   "home.mem.per.monthly": m("per month", "每月"),
   "home.mem.per.annual": m("per year", "每年"),
   "home.mem.per.family": m("per year", "每年"),

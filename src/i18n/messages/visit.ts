@@ -15,11 +15,11 @@ export const visitMessages = {
   "visit.address": m("Address", "地址"),
 
   "visit.dir.title": m("From Tin Shui Wai MTR", "由天水圍港鐵站前往"),
-  "visit.dir.note": m("Placeholder guidance. Route details to be confirmed by AKKI.", "預留指引，路線詳情待 AKKI 確認。"),
-  "visit.dir.1": m("Exit Tin Shui Wai MTR station.", "離開天水圍港鐵站。"),
-  "visit.dir.2": m("Follow the route to the park (transport option and stop to be confirmed).", "按路線前往樂園（交通方式及站點待確認）。"),
-  "visit.dir.3": m("Continue on foot or by ride to the entrance (directions to be confirmed).", "步行或乘車前往入口（方向待確認）。"),
-  "visit.dir.4": m("Check in at the park entrance with your booking reference.", "帶同預約編號於入口報到。"),
+  "visit.dir.note": m("Based on published information. AKKI to confirm route details.", "根據公開資料整理，路線詳情待 AKKI 確認。"),
+  "visit.dir.1": m("Take the Tuen Ma Line to Tin Shui Wai station.", "乘搭屯馬綫至天水圍站。"),
+  "visit.dir.2": m("AKKI says the park is about a five-minute drive from the station. A taxi is reported to take 2–3 minutes.", "AKKI 表示由車站駕車約五分鐘；據報乘的士約 2–3 分鐘。"),
+  "visit.dir.3": m("On foot it is reported at 10–15 minutes toward Ha Mei San Tsuen (exact route to be confirmed).", "據報步行約 10–15 分鐘往蝦尾新村（確實路線待確認）。"),
+  "visit.dir.4": m("WhatsApp AKKI before travelling to check weather and closures, then check in at the entrance.", "出發前請先 WhatsApp 查詢天氣及是否開放，抵達後於入口報到。"),
 
   "visit.tab.label": m("Ways to get here", "前往方式"),
   "visit.tab.car": m("Car", "自駕"),
@@ -38,7 +38,7 @@ export const visitMessages = {
   "visit.contact.email": m("Email", "電郵"),
 
   "visit.rules.title": m("Park rules", "場地守則"),
-  "visit.rules.1": m("Helmet compulsory for every rider.", "所有車手必須佩戴頭盔。"),
+  "visit.rules.1": m("Helmet expected for every rider (AKKI to confirm exact protective-gear rules).", "所有車手應佩戴頭盔（確實護具規定待 AKKI 確認）。"),
   "visit.rules.2": m("Ride in one direction only on each trail.", "每條賽道只可單向騎行。"),
   "visit.rules.3": m("Stay on marked trails.", "只可行駛已標示的賽道。"),
   "visit.rules.4": m("Respect other riders and give way when asked.", "尊重其他車手，並按指示讓路。"),

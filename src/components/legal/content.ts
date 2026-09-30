@@ -40,7 +40,7 @@ export const legalDocs: Record<LegalDocId, LegalSection[]> = {
   waiver: [
     { id: "intro", h: L("About this waiver", "關於此免責聲明"), p: [L(`Placeholder waiver text, version ${siteConfig.waiverVersion}. The final waiver is to be written and approved by AKKI's legal adviser.`, `預留免責聲明文本，版本 ${siteConfig.waiverVersion}。正式版本須由 AKKI 法律顧問撰寫及批核。`)] },
     { id: "risk", h: L("Acknowledgement of risk", "風險確認"), p: [L("Placeholder: mountain biking involves risk of injury. Riders acknowledge these risks and agree to follow park rules. Final wording to be provided.", "預留：山地單車運動存在受傷風險。車手確認明白風險並同意遵守場地守則。最終字句待提供。")] },
-    { id: "rules", h: L("Rules and equipment", "規則及裝備"), ul: [L("Helmet is compulsory.", "必須佩戴頭盔。"), L("Follow staff instructions.", "遵從職員指示。"), L("Report injuries or incidents to staff.", "向職員報告受傷或事故。")] },
+    { id: "rules", h: L("Rules and equipment", "規則及裝備"), ul: [L("Helmets are expected (exact rules to be confirmed by AKKI).", "應佩戴頭盔（確實規定待 AKKI 確認）。"), L("Follow staff instructions.", "遵從職員指示。"), L("Report injuries or incidents to staff.", "向職員報告受傷或事故。")] },
     { id: "minors", h: L("Riders under 18", "18 歲以下車手"), ul: [L("A parent or guardian signs on behalf of riders under 18.", "由家長或監護人代 18 歲以下車手簽署。"), L("Guardian details are collected during booking.", "監護人資料於預約時收集。"), L("Guardian identity is verified on arrival.", "監護人身份於抵達時核實。")] },
     { id: "digital", h: L("Digital acceptance", "電子確認"), p: [L("The booking flow records acceptance of this waiver version. Legal effect to be confirmed by AKKI's legal adviser.", "預約流程會記錄此版本免責聲明的確認。法律效力待 AKKI 法律顧問確認。")] },
   ],

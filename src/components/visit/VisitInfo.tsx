@@ -66,7 +66,7 @@ export function VisitInfo() {
       <Block icon={Phone} title={t("visit.contact")} tag={!siteConfig.contact.verified}>
         <ul className="space-y-1 text-sm">
           <li className="flex items-center gap-2 text-silver"><Phone className="h-4 w-4" aria-hidden />{t("visit.contact.phone")}: <a className="text-bone underline underline-offset-4" href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}>{siteConfig.contact.phone}</a></li>
-          <li className="flex items-center gap-2 text-silver"><Mail className="h-4 w-4" aria-hidden />{t("visit.contact.email")}: <a className="break-all text-bone underline underline-offset-4" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a></li>
+          <li className="flex items-center gap-2 text-silver"><Mail className="h-4 w-4" aria-hidden />{t("visit.contact.email")}: <a className="break-all text-bone underline underline-offset-4" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>{!siteConfig.contact.emailVerified && <DemoTag />}</li>
         </ul>
       </Block>
       <Block icon={Accessibility} title={t("visit.access.title")} tag>

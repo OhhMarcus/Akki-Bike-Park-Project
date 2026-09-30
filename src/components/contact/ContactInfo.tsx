@@ -27,7 +27,7 @@ export function ContactInfo() {
         </div>
         <ul className="space-y-3 text-sm">
           <li className="flex items-center gap-3"><Phone className="h-4 w-4 shrink-0 text-silver" aria-hidden /><span className="text-silver">{t("contact.info.phone")}</span><a className="text-bone underline underline-offset-4" href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}>{siteConfig.contact.phone}</a></li>
-          <li className="flex items-center gap-3"><Mail className="h-4 w-4 shrink-0 text-silver" aria-hidden /><span className="text-silver">{t("contact.info.email")}</span><a className="break-all text-bone underline underline-offset-4" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a></li>
+          <li className="flex items-center gap-3"><Mail className="h-4 w-4 shrink-0 text-silver" aria-hidden /><span className="text-silver">{t("contact.info.email")}</span><a className="break-all text-bone underline underline-offset-4" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>{!siteConfig.contact.emailVerified && <DemoTag />}</li>
           <li className="flex items-start gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-silver" aria-hidden /><span><span className="text-silver">{t("contact.info.response")}: </span>{l(siteConfig.contact.responseTime)}</span></li>
         </ul>
         <WhatsAppButton variant="primary" className="w-full sm:w-auto" />

@@ -5,6 +5,7 @@ import { getServerT } from "@/i18n/server";
 import { buttonVariants } from "@/components/ui/button";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { ParkExplorer } from "@/components/park/ParkExplorer";
+import { ParkFacts } from "@/components/park/ParkFacts";
 import { ParkInfo } from "@/components/park/ParkInfo";
 import { ParkMapDownload } from "@/components/park/ParkMapDownload";
 import { ParkFaq } from "@/components/park/ParkFaq";
@@ -35,6 +36,11 @@ export default async function ParkPage() {
             {t("park.placeholder.banner")}
           </p>
         </div>
+      </section>
+
+      <section className="container pt-12 md:pt-16">
+        <SectionHeading eyebrow={t("park.facts.eyebrow")} title={t("park.facts.title")} className="mb-6" />
+        <ParkFacts />
       </section>
 
       <section className="container py-12 md:py-16">
