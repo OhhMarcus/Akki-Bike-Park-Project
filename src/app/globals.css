@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { background: #b8bcc4; color: #0d0d0e; }
+  :focus-visible { outline: 2px solid #b8bcc4; outline-offset: 3px; border-radius: 4px; }
+  input, select, textarea { font: inherit; }
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .h-display { @apply font-display font-extrabold uppercase leading-[0.95] tracking-tight; }
+  .h-section { @apply font-display text-3xl font-bold uppercase leading-none tracking-tight md:text-5xl; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.2em] text-silver-dim; }
+  .surface { @apply rounded-lg border border-graphite-700 bg-graphite-900; }
+  .section-pad { @apply py-16 md:py-24; }
+  .topo {
+    background-color: #17171a;
+    background-image:
+      repeating-radial-gradient(circle at 20% 30%, transparent 0 22px, rgba(184,188,196,.07) 22px 23px),
+      repeating-radial-gradient(circle at 80% 70%, transparent 0 28px, rgba(184,188,196,.05) 28px 29px);
+  }
+}
+
+/* Hide native date icon differences; keep readable in dark */
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+}
