@@ -42,12 +42,6 @@ export const addOnPrices = {
   coaching: 180,
 } as const;
 
-export const membershipTiers = [
-  { id: "monthly", name: { en: "Monthly Rider", zh: "月費騎手" }, priceHKD: 480 },
-  { id: "annual", name: { en: "Annual Rider", zh: "年度騎手" }, priceHKD: 3800 },
-  { id: "family", name: { en: "Family Pass", zh: "家庭通行證" }, priceHKD: 6800 },
-] as const;
-
 export function getExperience(id: string) {
   return experiences.find((e) => e.id === id);
 }

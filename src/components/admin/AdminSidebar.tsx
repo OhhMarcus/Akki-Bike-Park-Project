@@ -18,7 +18,6 @@ const items: { href: string; key: MessageKey; icon: typeof Gauge }[] = [
   { href: "/admin/content", key: "admin.nav.content", icon: PenLine },
   { href: "/admin/enquiries", key: "admin.nav.enquiries", icon: Inbox },
   { href: "/admin/promotions", key: "admin.nav.promotions", icon: Ticket },
-  { href: "/admin/memberships", key: "admin.nav.memberships", icon: Award },
 ];
 
 export function AdminSidebar({ email, onNavigate, onReset, onLogout }: { email: string; onNavigate?: () => void; onReset: () => void; onLogout: () => void }) {

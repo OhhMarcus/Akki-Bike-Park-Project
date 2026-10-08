@@ -1,4 +1,4 @@
-import type { Announcement, Booking, Enquiry, GroupEnquiry, Membership, ParkStatus, PromotionCode, WaitlistEntry, ParticipantInput } from "@/types";
+import type { Announcement, Booking, Enquiry, GroupEnquiry, ParkStatus, PromotionCode, WaitlistEntry, ParticipantInput } from "@/types";
 import { daysFromToday } from "@/lib/dates";
 
 /** Everything here is DEMONSTRATION DATA (fictional names, fictional numbers). */
@@ -92,10 +92,4 @@ export const seedEnquiries: Enquiry[] = [
 export const seedGroupEnquiries: GroupEnquiry[] = [
   { id: "ge_1", segment: "school", organisation: "Demo Secondary School", contactName: "Demo Teacher", email: "teacher@example.com", phone: "+85200000000", groupSize: 30, addOns: ["coaching", "rental"], message: "Demo enquiry for an outdoor education day.", status: "new", createdAt: now, isDemo: true },
   { id: "ge_2", segment: "corporate", organisation: "Demo Company Ltd", contactName: "Demo HR", email: "hr@example.com", phone: "+85200000000", groupSize: 20, addOns: ["catering", "photography"], message: "Demo team-building enquiry.", status: "quoted", createdAt: now, isDemo: true },
-];
-
-export const seedMemberships: Membership[] = [
-  { id: "m_1", riderName: "Demo Member One", email: "m1@example.com", phone: "+85200000000", tier: "annual", status: "active", startsOn: daysFromToday(-120), endsOn: daysFromToday(245), visits: 18, isDemo: true },
-  { id: "m_2", riderName: "Demo Member Two", email: "m2@example.com", phone: "+85200000000", tier: "monthly", status: "active", startsOn: daysFromToday(-10), endsOn: daysFromToday(20), visits: 4, isDemo: true },
-  { id: "m_3", riderName: "Demo Family Three", email: "m3@example.com", phone: "+85200000000", tier: "family", status: "expired", startsOn: daysFromToday(-400), endsOn: daysFromToday(-35), visits: 31, isDemo: true },
 ];

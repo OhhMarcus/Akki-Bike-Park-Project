@@ -13,7 +13,6 @@ const Gallery = dynamic(() => import("@/components/home/Gallery").then((m) => m.
 const TestimonialSlider = dynamic(() => import("@/components/home/TestimonialSlider").then((m) => m.TestimonialSlider));
 const LocationTransport = dynamic(() => import("@/components/home/LocationTransport").then((m) => m.LocationTransport));
 const SocialPreview = dynamic(() => import("@/components/home/SocialPreview").then((m) => m.SocialPreview));
-const MembershipTeaser = dynamic(() => import("@/components/home/MembershipTeaser").then((m) => m.MembershipTeaser));
 const FinalCTA = dynamic(() => import("@/components/home/FinalCTA").then((m) => m.FinalCTA));
 
 export function generateMetadata() {
@@ -41,7 +40,6 @@ export default function HomePage() {
       <TestimonialSlider />
       <LocationTransport />
       <SocialPreview />
-      <MembershipTeaser />
       <FinalCTA />
     </>
   );

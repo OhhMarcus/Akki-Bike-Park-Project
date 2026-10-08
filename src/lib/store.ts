@@ -3,10 +3,10 @@
 import { useCallback, useSyncExternalStore } from "react";
 import type {
   Announcement, Booking, BookingDraft, CapacityOverride, Enquiry, EventRegistration, GroupEnquiry,
-  Membership, ParkEvent, ParkStatus, PromotionCode, WaitlistEntry, CoachingProgramme,
+  ParkEvent, ParkStatus, PromotionCode, WaitlistEntry, CoachingProgramme,
 } from "@/types";
 import {
-  seedAnnouncement, seedBookings, seedEnquiries, seedGroupEnquiries, seedMemberships,
+  seedAnnouncement, seedBookings, seedEnquiries, seedGroupEnquiries,
   seedParkStatus, seedPromos, seedWaitlist,
 } from "@/content/seed";
 import { getSeedEvents } from "@/content/events";
@@ -105,7 +105,6 @@ export const useProgrammes = () => useStored<CoachingProgramme[]>("programmes", 
 export const usePromos = () => useStored<PromotionCode[]>("promos", seedPromos);
 export const useAnnouncement = () => useStored<Announcement>("announcement", seedAnnouncement);
 export const useParkStatus = () => useStored<ParkStatus>("parkStatus", seedParkStatus);
-export const useMemberships = () => useStored<Membership[]>("memberships", seedMemberships);
 export const useEnquiries = () => useStored<Enquiry[]>("enquiries", seedEnquiries);
 export const useGroupEnquiries = () => useStored<GroupEnquiry[]>("groupEnquiries", seedGroupEnquiries);
 export const useWaitlist = () => useStored<WaitlistEntry[]>("waitlist", seedWaitlist);
