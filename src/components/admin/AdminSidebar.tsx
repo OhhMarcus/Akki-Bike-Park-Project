@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Award, CalendarCheck, CalendarDays, ExternalLink, Gauge, Inbox, LayoutDashboard, LogOut, PenLine, RotateCcw, Target, Ticket, Users } from "lucide-react";
+import { CalendarCheck, CalendarDays, ExternalLink, Gauge, Inbox, LayoutDashboard, LogOut, PenLine, RotateCcw, Target, Ticket, Users } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import type { MessageKey } from "@/i18n/dictionary";
 import { Button, buttonVariants } from "@/components/ui/button";
