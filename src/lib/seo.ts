@@ -1,28 +1,27 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { site } from "@/config/site";
 import { getServerLocale } from "@/i18n/server";
 import type { LocalizedText } from "@/types";
 
-/** Per-page bilingual metadata. `path` is the canonical route (e.g. "/park"). */
-export async function buildMetadata(opts: { title: LocalizedText; description: LocalizedText; path: string; noindex?: boolean }): Promise<Metadata> {
+/** Per-page bilingual metadata (title, description, Open Graph). */
+export async function buildMetadata(o: { title: LocalizedText; description: LocalizedText; path: string; noindex?: boolean }): Promise<Metadata> {
   const locale = await getServerLocale();
-  const title = opts.title[locale];
-  const description = opts.description[locale];
-  const url = `${siteConfig.url}${opts.path}`;
+  const title = o.title[locale];
+  const description = o.description[locale];
+  const url = `${site.url}${o.path}`;
   return {
     title,
     description,
     alternates: { canonical: url },
-    robots: opts.noindex ? { index: false, follow: false } : undefined,
+    robots: o.noindex ? { index: false, follow: false } : undefined,
     openGraph: {
-      title: `${title} | ${siteConfig.name[locale]}`,
+      title: `${title} | ${site.name[locale]}`,
       description,
       url,
-      siteName: siteConfig.name[locale],
+      siteName: site.name[locale],
       locale: locale === "zh" ? "zh_HK" : "en_HK",
-      alternateLocale: locale === "zh" ? ["en_HK"] : ["zh_HK"],
       type: "website",
+      images: [{ url: "/brand/akki-logo.png", width: 1317, height: 616, alt: site.name.en }],
     },
-    twitter: { card: "summary_large_image", title, description },
   };
 }

@@ -1,115 +1,85 @@
-# AKKI Bike Park / 丫髻山地單車樂園
+# AKKI Bike Park · 丫髻山地單車樂園 — clickable demo
 
-Bilingual (繁體中文 default + English) website, booking prototype, events system, staff admin demo and private sales proposal for AKKI Bike Park, Hong Kong.
+A pitch demo with both sides of the product:
 
-Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Radix/shadcn-style components, Lucide, Framer Motion, Zod. Supabase-ready; runs **fully locally** with mock data + `localStorage` when no environment variables are set.
+- **Public site** riders use to book: lessons, pump track sessions, events & races, AKKI Bike Club, visit info.
+- **Admin dashboard** (`/admin`) the park uses to run everything: today's sessions, bookings from every source, manual entry, schedule, weather closures, events, riders, stats.
 
-> This is a demonstration prototype. Prices, events, opening hours, trail data, testimonials and instructors are **placeholders**, clearly marked with amber `DEMO` labels. Nothing is charged; no card data is ever collected.
+Everything runs in the browser with realistic **sample data** (relative to today, next 4 weeks). No real payments, no real login. Amber **SWAP** markers show every placeholder; the "Demo · sample data" badge in the footer toggles them on and off.
 
-## Quick start
+## Run it
+
+Needs Node 20+.
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run typecheck    # tsc --noEmit
-npm run build && npm start
+npm run dev        # http://localhost:3000
 ```
 
-No `.env` is required. Optionally copy `.env.example` to `.env.local`.
+Production build: `npm run build && npm start`. Type check: `npm run typecheck`.
 
-### Demo credentials
+The admin opens straight into demo mode at **http://localhost:3000/admin** (no login). Public site and admin share the same browser storage, so a booking made on the site appears in the admin instantly (also across tabs). **Admin → Reset demo data** restores the sample data.
 
-| Area | URL | Login |
-| --- | --- | --- |
-| Admin dashboard | `/admin` | `admin@akki-demo.hk` / `akki-demo-2025` |
-| Private sales proposal (not linked publicly) | `/proposal` | none |
-| Look up a seeded booking | `/my-bookings` | reference `AKKI-DEMO01`, email `rider1@example.com` |
-| Demo promo codes | Booking → Review | `FIRSTRIDE` (10%), `AKKI50` (HK$50 off) |
+## 5-minute demo script
 
-Use **Admin → Reset demo data** to clear everything stored in the browser.
+1. **Home**: the hero status card is live: open/closed, temperature, HK Observatory warning, next free session, countdown to the next race. Toggle **EN / 繁** in the nav (instant, remembered).
+2. **Pump Track**: swipe the 14-day strip (phone) or use the week grid (desktop). Tap a slot → riders + rentals → pay (mock FPS / PayMe / card) → confirmed, usually in well under 30 seconds.
+3. **Lessons**: Foundation or Advanced → available dates highlighted → "3 of 8 left" time slots → rider details (height → bike size) → waiver signed with a finger → mock payment → confirmation with add-to-calendar and WhatsApp. The 5-class pack is offered at step one.
+4. **Admin → Today**: the booking you just made is in today's roster with rental bikes by size.
+5. **Admin → Add booking**: enter a Klook or WhatsApp booking into the same calendar; try to overbook a full slot and see it blocked.
+6. **Admin → Weather closure**: close the park for a Typhoon Signal No. 8 window, see the affected bookings and the bilingual rider message, send it (demo). The public pump track shows those slots as Closed and the hero card shows the warning. Reopen to undo.
+7. **Admin → Events / Riders / Stats**: bilingual event editor, rider history and class packs, occupancy heatmap and bookings by source.
 
-## Route map
+## Swap in the real details
 
-| Route | Purpose |
+| What | Where |
 | --- | --- |
-| `/` | Hero + park status, quick booking, audiences, events, coaching, gallery, location, CTA |
-| `/park` | Interactive trail/facility map, difficulty filters, safety and gear guidance |
-| `/booking` | 6-step booking: experience → date/time → riders → review → payment (demo) → confirmation |
-| `/my-bookings` | Booking list, lookup, cancel / change requests |
-| `/events`, `/events/[slug]` | Event list + calendar, filters, detail, registration, WhatsApp share, .ics |
-| `/coaching` | Programmes + "which programme suits me?" questionnaire |
-| `/groups` | Schools, youth, corporate, birthdays, private groups, brand days; quote enquiry |
-| `/visit`, `/contact` | Directions, hours, rules, FAQ, checklist; enquiry form |
-| `/privacy`, `/terms`, `/cancellation`, `/waiver` | Legal placeholders |
-| `/admin/*` | Protected demo dashboard (bookings, customers, events, coaching, capacity, content, enquiries, promotions, memberships) |
-| `/proposal` | Private commercial proposal for AKKI management (`noindex`, not in navigation) |
-| `/api/*` | Zod-validated, sanitised, rate-limited endpoints |
+| Address, map search, MTR station, WhatsApp number, email, social links, prices, club fee | `src/config/site.ts` (one file; set each `placeholder: false` when confirmed) |
+| Opening hours, session length, riders per session, recurring lesson times | `src/config/schedule.ts` (defaults) and live in **Admin → Schedule** |
+| Lessons copy, 5-class pack, coach names/roles | `src/content/catalogue.ts` |
+| Sample events | `src/content/events.ts` (or create real ones in **Admin → Events**) |
+| All text, both languages, incl. month/weekday names and date/time formats | `src/i18n/messages/*.ts` (`"key": m("English", "中文")`) |
+| Photos | Drop files into `public/images/` named after the slot (see `public/images/README.md`); no code changes |
+| Waiver wording | `book.waiver.*` in `src/i18n/messages/book.ts` |
+
+**Location check:** the brief places the park in Sheung Shui near Shek Wu San Tsuen, which is what the demo shows. The earlier research pack (and the name 丫髻山) pointed to Ha Mei San Tsuen, Ping Shan, Yuen Long. Confirm with AKKI and edit `site.location` in `src/config/site.ts`.
+
+## Brand system
+
+- Logo: `public/brand/akki-logo.png` (wordmark cut from the supplied artwork onto transparent) and `akki-logo-nav.png` (72 px tall for the 36 px nav). Never recoloured or stretched.
+- Pattern: `public/brand/pattern.svg`, a seamless tile recreating the logo background (interlocking tribar triangles in rows with black bands, greys #2B2A2A–#3E3C3C on #080808). Regenerate it with `python3 scripts/generate-pattern.py` (tweak proportions and greys at the bottom of the script).
+- Gradient `#A85FA8 → #C8829A → #EBB04A → #D8CF94 → #6FB1C6` is a highlighter only: primary buttons, selected dates, availability bars, one word per headline, focus rings, admin charts.
+- Type: Barlow Condensed ExtraBold Italic (headlines, uppercase), Inter (body), Noto Sans TC (Chinese; Black for headlines, never fake-italic, no letter-spacing).
+- Tokens: `tailwind.config.ts`, utilities: `src/app/globals.css`.
 
 ## Architecture
 
 ```
 src/
-  app/                 Routes. (site)/ has the public header/footer; admin/ and proposal/ have own layouts
-    api/               bookings, enquiries, group-enquiries, waitlist, newsletter, payments/intent
-  components/
-    ui/                shadcn-style primitives (Button, Input, Modal, Accordion, Toast…)
-    common/ layout/    shared building blocks, navigation, footer, sticky mobile Book Now
-    home/ park/ booking/ events/ coaching/ groups/ visit/ contact/ admin/ proposal/
-  config/
-    site.ts            ★ ALL unverified business info: address, phone, email, hours, social, session times
-    pricing.ts         ★ DEMO prices, add-ons, membership tiers
-    proposal.ts        ★ Editable proposal pricing placeholders
-  content/             Demo events, coaching programmes, trails, seed bookings, FAQ, testimonials
-  i18n/
-    messages/*.ts      ★ Every UI string as { en, zh } side by side, one file per area
-    dictionary.ts      Merges the message files; keys are type-checked
-  lib/                 store (localStorage), availability, pricing, validation (zod), sanitize, ratelimit, supabase, payments, seo, jsonld
-  types/               Domain types (User, RiderProfile, Guardian, Booking, TimeSlot, Experience, Event, …)
-supabase/schema.sql    Postgres schema + row-level security matching the types
+  app/(site)/        public pages (layout adds header, footer, sticky Book bar, WhatsApp button)
+  app/admin/         admin screens (AdminShell)
+  components/        ui/ brand/ layout/ calendar/ booking/ + one folder per area
+  config/            site.ts (placeholders), schedule.ts (hours, slots, capacity, lesson times)
+  content/           catalogue (lessons, pack, coaches), sample events
+  i18n/              dictionary + formatters (dates, times, money, plurals) + EN/繁 provider
+  lib/
+    schedule.ts      pure engine: weekly rules + blocks + bookings → sessions/slots with capacity & status
+    services.ts      every write (book, move, edit, cancel, close park, events, packs) — re-checks capacity, so nothing double-books
+    store.ts         demo persistence (localStorage), shared by site + admin, sample data refreshed daily
+    seed.ts          deterministic sample riders/bookings (3 weeks history, 4 weeks ahead)
+  types/             Lesson, Session, PumpTrackSlot, Booking (+source), ParkEvent, Rider, …
+supabase/schema.sql  matching Postgres schema for the real thing
 ```
 
-### Data flow
+### Connecting the real services later
 
-1. The browser validates with a shared Zod schema, then POSTs to an API route.
-2. The route re-validates, sanitises, rate-limits, and (if Supabase env vars exist) inserts into Supabase.
-3. On success the browser also stores the record in `localStorage` (`src/lib/store.ts`), which powers My Bookings and the admin demo. Collections stay on seed content until first edited, so demo dates are always relative to today.
+- **Database**: create the tables in `supabase/schema.sql`. Replace `getState`/`setState` in `src/lib/store.ts` with API calls of the same shapes, and run the `services.ts` checks inside a transaction (`select … for update` on the slot) so concurrent bookings can't overbook.
+- **Payments**: `PaymentPicker` is the seam. Create the payment intent server-side (Stripe for cards/Apple Pay/Google Pay; PayMe for Business; FPS via the bank's QR), confirm by webhook, then mark the booking paid. The demo never collects card numbers.
+- **WhatsApp**: confirmations and weather-closure messages map to WhatsApp Business Platform templates (one EN, one 繁中); the closure screen already produces both texts.
+- **Klook**: bookings carry `source` and `externalRef`; a Klook channel-manager feed or manual entry in Admin → Add booking keeps them in the same capacity pool.
+- **Weather**: replace `src/lib/weather.ts` with the HK Observatory open data API (current weather + warning summary).
+- **Login**: add staff accounts with roles before `/admin` goes live.
 
-## Replacing mock content
+## Deploy
 
-1. **Business facts** → edit `src/config/site.ts`, then set `verified: true` on each block (JSON-LD only emits verified address/phone).
-2. **Prices** → `src/config/pricing.ts` (later: `experiences` table).
-3. **Copy, both languages** → `src/i18n/messages/<area>.ts`. Content objects (events, programmes, trails) use `{ en, zh }` pairs in `src/content/*.ts`.
-4. **Events** → add real ones in Admin → Events (untick "Demo") or edit `src/content/events.ts`. Only non-demo events receive Event structured data and countdowns.
-5. **Photos** → drop files in `public/` and pass `src="/your.jpg"` to `PhotoPlaceholder` (or replace the component with `next/image`). Always keep descriptive `alt` text.
-6. **Trails / map** → `src/content/trails.ts`; put the official PDF at `public/akki-park-map.pdf` and set `parkMapPdf.available = true`.
-7. **Testimonials** → `src/content/testimonials.ts` (only real, permissioned quotes).
-8. Hide amber demo labels for launch: `NEXT_PUBLIC_SHOW_DEMO_LABELS=false`.
-
-## Going live
-
-### Supabase
-1. Create a project, run `supabase/schema.sql`.
-2. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (server only).
-3. API routes then persist automatically. Replace `useStored(...)` reads in `src/lib/store.ts` with Supabase queries and replace the demo admin login with Supabase Auth plus a role check (`users.role in ('staff','admin')`) and RLS policies.
-
-### Payments
-`src/lib/payments.ts` and `/api/payments/intent` are the seam. Recommended: Stripe (cards, Apple/Google Pay, Alipay HK, WeChat Pay, FPS availability depends on account region and approval; confirm with the provider) using hosted Checkout or Elements. Create the PaymentIntent server-side, confirm via a signed webhook (`STRIPE_WEBHOOK_SECRET`), recompute prices from the database, and lock slot capacity in a transaction. Never accept card numbers in this app's own inputs.
-
-### Deploy to Vercel
-1. Push to GitHub, import the repo in Vercel (framework preset: Next.js, no build overrides).
-2. Add environment variables from `.env.example`. Set `NEXT_PUBLIC_SITE_URL` to the production URL (used by sitemap, canonical URLs, Open Graph).
-3. Replace the in-memory rate limiter in `src/lib/ratelimit.ts` with Upstash Redis (serverless instances do not share memory).
-
-## Security & privacy notes
-
-- Shared Zod validation client + server; text sanitised (`src/lib/sanitize.ts`); CSV export neutralises formula injection; honeypot fields; per-IP rate limits on booking, enquiry, waitlist, newsletter, proposal endpoints.
-- Security headers in `next.config.mjs`. Secrets only in env vars; the service-role key is server-only.
-- No card data stored or transmitted by this app. Waiver + guardian consent captured per booking for minors.
-- Consent checkboxes on every form that collects personal data; privacy/terms pages are placeholders for legal review. This prototype does not claim PDPO compliance; have counsel review before launch.
-
-## Known prototype limits
-
-- Availability is deterministic mock data plus local bookings; real capacity locking needs the database.
-- Admin auth is a demo gate in the browser (not secure).
-- Email confirmations, WhatsApp Business messaging and live payments are simulated.
-- Weather is a placeholder.
+Push to GitHub, import into Vercel (Next.js preset, no overrides). Set `NEXT_PUBLIC_SITE_URL` to the production URL.

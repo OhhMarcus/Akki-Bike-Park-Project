@@ -1,20 +1,20 @@
 "use client";
 
 import * as A from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 
-export function FAQAccordion({ items }: { items: { q: string; a: string }[] }) {
+export function FAQ({ items, className }: { items: { q: string; a: React.ReactNode }[]; className?: string }) {
   return (
-    <A.Root type="single" collapsible className="divide-y divide-graphite-700 rounded-lg border border-graphite-700 bg-graphite-900">
+    <A.Root type="single" collapsible className={className}>
       {items.map((it, i) => (
-        <A.Item key={i} value={`i${i}`}>
+        <A.Item key={i} value={`q${i}`} className="border-b border-line">
           <A.Header>
-            <A.Trigger className="group flex min-h-14 w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold hover:bg-graphite-800 md:text-base">
+            <A.Trigger className="group flex min-h-14 w-full items-center justify-between gap-4 py-4 text-left font-semibold hover:text-fg/90">
               {it.q}
-              <ChevronDown className="h-4 w-4 shrink-0 text-silver transition-transform group-data-[state=open]:rotate-180" />
+              <Plus className="h-4 w-4 shrink-0 text-muted transition-transform group-data-[state=open]:rotate-45" aria-hidden />
             </A.Trigger>
           </A.Header>
-          <A.Content className="overflow-hidden px-5 pb-5 text-sm leading-relaxed text-silver">{it.a}</A.Content>
+          <A.Content className="overflow-hidden pb-5 text-[15px] leading-relaxed text-muted">{it.a}</A.Content>
         </A.Item>
       ))}
     </A.Root>

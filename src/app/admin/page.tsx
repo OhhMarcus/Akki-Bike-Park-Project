@@ -1,5 +1,3 @@
-import { OverviewAdmin } from "@/components/admin/OverviewAdmin";
-
-export default function AdminOverviewPage() {
-  return <OverviewAdmin />;
+export default function Page() {
+  return <h1 className="h-display text-4xl">Today</h1>;
 }

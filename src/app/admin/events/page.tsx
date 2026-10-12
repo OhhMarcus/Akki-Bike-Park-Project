@@ -1,5 +1,3 @@
-import { EventsAdmin } from "@/components/admin/EventsAdmin";
-
-export default function AdminEventsPage() {
-  return <EventsAdmin />;
+export default function Page() {
+  return <h1 className="h-display text-4xl">events</h1>;
 }

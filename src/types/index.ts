@@ -1,321 +1,253 @@
 /**
- * Domain types. Every type maps 1:1 to a table in supabase/schema.sql
- * (snake_case columns there, camelCase here).
+ * AKKI domain model. Shaped so each interface maps to one database table later
+ * (see supabase/schema.sql). Dates are "YYYY-MM-DD" and times "HH:mm", both in
+ * Hong Kong time. Money is whole Hong Kong dollars.
  */
 
 export type Locale = "en" | "zh";
 export type LocalizedText = { en: string; zh: string };
 
-export type Level = "beginner" | "intermediate" | "advanced";
-export type Difficulty = Level;
-export type DayPeriod = "morning" | "afternoon" | "fullday";
-export type Availability = "available" | "limited" | "full" | "closed";
+export type ISODate = string; // YYYY-MM-DD (HK)
+export type HHmm = string; // 24h "14:00"
 
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string;
-  role: "rider" | "staff" | "admin";
-  language: Locale;
-  marketingConsent: boolean;
-  createdAt: string;
-};
+/* ---------- Catalogue ---------- */
 
-export type Guardian = {
-  name: string;
-  relationship: string;
-  phone: string;
-  email: string;
-  consentGiven: boolean;
-};
+export type LessonId = "foundation" | "advanced";
+export type TeachingLanguage = "en" | "yue"; // English, Cantonese
 
-export type RiderProfile = {
-  id: string;
-  userId?: string;
-  name: string;
-  age: number;
-  level: Level;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  guardian?: Guardian;
-};
-
-export type ExperienceId =
-  | "entry"
-  | "beginner"
-  | "coaching"
-  | "kids"
-  | "camp"
-  | "private"
-  | "school"
-  | "corporate"
-  | "event";
-
-export type Experience = {
-  id: ExperienceId;
+export interface Lesson {
+  id: LessonId;
+  level: "beginner" | "advanced";
   name: LocalizedText;
-  blurb: LocalizedText;
-  /** DEMO price in HKD. Replace via src/config/pricing.ts */
-  priceHKD: number;
-  pricingUnit: "person" | "group";
-  /** Minimum participants for the booking */
-  minParticipants: number;
-  maxParticipants: number;
-  periods: DayPeriod[];
-  level: Level | "all";
-  icon: string;
-  /** Needs an approved enquiry rather than instant payment */
-  quoteOnly?: boolean;
-};
+  summary: LocalizedText;
+  learn: LocalizedText[];
+  durationMin: number;
+  capacity: number; // small group cap per session
+  minAge: number;
+  priceHKD: number; // PLACEHOLDER price
+}
 
-export type TimeSlot = {
-  id: string; // `${date}_${period}`
-  date: string; // YYYY-MM-DD (Hong Kong time)
-  period: DayPeriod;
-  startTime: string;
-  endTime: string;
+export interface ClassPack {
+  id: "pack5";
+  classes: number;
+  validityDays: number;
+  /** PLACEHOLDER price per lesson type */
+  priceHKD: Record<LessonId, number>;
+}
+
+export interface Coach {
+  id: string;
+  name: LocalizedText; // PLACEHOLDER
+  role: LocalizedText;
+  languages: TeachingLanguage[];
+  photoSlot: string; // image slot name in /public/images
+}
+
+/* ---------- Schedule ---------- */
+
+/** Recurring weekly lesson time, edited in Admin → Schedule. weekday: 0 = Sunday. */
+export interface LessonTemplate {
+  id: string;
+  lessonId: LessonId;
+  weekday: number;
+  start: HHmm;
+  language: TeachingLanguage;
+  coachId: string;
+  capacity: number;
+  active: boolean;
+}
+
+export interface PumpTrackDayHours {
+  weekday: number; // 0 = Sunday
+  open: boolean;
+  start: HHmm;
+  end: HHmm;
+}
+
+export interface ScheduleSettings {
+  lessonTemplates: LessonTemplate[];
+  pumpHours: PumpTrackDayHours[];
+  slotMinutes: number; // PLACEHOLDER session length
+  slotCapacity: number; // PLACEHOLDER riders per session
+  updatedAt: string;
+}
+
+export type BlockReason = "maintenance" | "private" | "weather" | "event" | "other";
+
+/** A closed period. No start/end = whole day. */
+export interface Block {
+  id: string;
+  date: ISODate;
+  start?: HHmm;
+  end?: HHmm;
+  scope: "all" | "pump" | "lessons";
+  reason: BlockReason;
+  note?: string;
+  closureId?: string;
+  /** true for blocks added during the demo (kept when sample data refreshes) */
+  userCreated?: boolean;
+}
+
+/* ---------- Bookable units (generated from schedule) ---------- */
+
+export type SlotStatus = "available" | "almost" | "full" | "closed";
+
+/** A lesson running on a date ("Session" in the brief). */
+export interface Session {
+  id: string; // les_<lessonId>_<date>_<HHmm>
+  lessonId: LessonId;
+  templateId: string;
+  date: ISODate;
+  start: HHmm;
+  end: HHmm;
+  language: TeachingLanguage;
+  coachId: string;
   capacity: number;
   booked: number;
   remaining: number;
-  status: Availability;
-};
+  status: SlotStatus;
+  closedReason?: BlockReason;
+}
 
-export type ParticipantInput = {
+export interface PumpTrackSlot {
+  id: string; // pt_<date>_<HHmm>
+  date: ISODate;
+  start: HHmm;
+  end: HHmm;
+  capacity: number;
+  booked: number;
+  remaining: number;
+  status: SlotStatus;
+  closedReason?: BlockReason;
+}
+
+/* ---------- People & bookings ---------- */
+
+export type BookingSource = "website" | "klook" | "whatsapp" | "walkin";
+export type BookingKind = "lesson" | "pump" | "event";
+export type BikeSize = "k20" | "k24" | "S" | "M" | "L" | "XL";
+export type Experience = "new" | "some" | "regular" | "racer";
+
+export interface Rentals {
+  bikes: Partial<Record<BikeSize, number>>;
+  helmets: number;
+}
+
+export interface Booking {
+  id: string;
+  ref: string; // shown to riders, e.g. AK-7F3K2
+  kind: BookingKind;
+  /** Session.id, PumpTrackSlot.id or ParkEvent.id */
+  targetId: string;
+  date: ISODate;
+  start: HHmm;
+  end: HHmm;
+  riderId: string;
+  riderName: string;
+  phone: string;
+  riders: number; // headcount on this booking
+  rentals: Rentals;
+  source: BookingSource;
+  status: "confirmed" | "cancelled";
+  payment: "paid" | "unpaid" | "refunded";
+  attendance: "pending" | "attended" | "no_show";
+  priceHKD: number;
+  usedPack?: boolean;
+  eventCategoryId?: string;
+  externalRef?: string; // e.g. Klook order number
+  notes?: string;
+  /** Set by a weather closure until staff resolve it */
+  flag?: { closureId: string; reason: WarningCode; notified: boolean };
+  waiverSigned?: boolean;
+  createdAt: string;
+  /** true for records created during the demo (kept when sample data refreshes) */
+  userCreated?: boolean;
+}
+
+export interface PackHolding {
+  id: string;
+  lessonId: LessonId;
+  total: number;
+  remaining: number;
+  purchasedOn: ISODate;
+  expiresOn: ISODate;
+}
+
+export interface Rider {
   id: string;
   name: string;
-  age: number | "";
-  level: Level;
-  emergencyName: string;
-  emergencyPhone: string;
-  bike: "own" | "rental";
-  equipment: { helmet: boolean; gloves: boolean; pads: boolean };
-  guardian?: Guardian;
-  coachingAddOn: boolean;
-};
-
-export type BookingParticipant = ParticipantInput & { bookingId: string };
-
-export type BookingStatus =
-  | "pending"
-  | "confirmed"
-  | "checked_in"
-  | "completed"
-  | "cancelled"
-  | "no_show";
-export type PaymentStatus = "unpaid" | "paid_demo" | "refund_requested" | "refunded_demo";
-
-export type Booking = {
-  id: string;
-  reference: string;
-  experienceId: ExperienceId;
-  /** Event id when experienceId === "event" */
-  eventId?: string;
-  date: string;
-  period: DayPeriod;
-  participants: ParticipantInput[];
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  status: BookingStatus;
-  paymentStatus: PaymentStatus;
-  paymentMethod?: PaymentMethodId;
-  subtotal: number;
-  discount: number;
-  total: number;
-  promoCode?: string;
-  waiverAccepted: boolean;
-  waiverId?: string;
-  termsAccepted: boolean;
-  marketingConsent: boolean;
-  changeRequest?: { type: "cancel" | "change"; note: string; requestedAt: string };
+  phone: string; // +852 format
+  email?: string;
+  age?: number;
+  heightCm?: number;
+  experience?: Experience;
+  packs: PackHolding[];
+  clubMember?: boolean;
   notes?: string;
   createdAt: string;
-  isDemo?: boolean;
-};
+  userCreated?: boolean;
+}
 
-export type PaymentMethodId = "card" | "fps" | "alipayhk" | "wechat";
+/* ---------- Events ---------- */
 
-export type EventType =
-  | "race"
-  | "clinic"
-  | "beginner_day"
-  | "kids_camp"
-  | "holiday"
-  | "community"
-  | "demo"
-  | "school"
-  | "corporate";
+export type EventType = "race" | "nightjam" | "groupride" | "kidscamp";
 
-export type ParkEvent = {
+export interface EventCategory {
+  id: string;
+  name: LocalizedText;
+  ages: LocalizedText;
+  capacity: number;
+  priceHKD: number; // PLACEHOLDER
+}
+
+export interface ParkEvent {
   id: string;
   slug: string;
   type: EventType;
   title: LocalizedText;
   summary: LocalizedText;
-  description: LocalizedText;
-  /** YYYY-MM-DD (HK) */
-  date: string;
-  startTime: string;
-  endTime: string;
-  level: Level | "all";
-  minAge: number;
-  maxAge?: number;
-  capacity: number;
-  registered: number;
-  registrationDeadline: string;
-  priceHKD: number | null;
-  schedule: { time: string; item: LocalizedText }[];
-  organizer: { name: LocalizedText; role: LocalizedText };
-  requiredEquipment: LocalizedText[];
-  faq: { q: LocalizedText; a: LocalizedText }[];
-  featured?: boolean;
-  /** True = illustrative content. Only isDemo === false events get JSON-LD and countdowns. */
-  isDemo: boolean;
+  body: LocalizedText;
+  date: ISODate;
+  start: HHmm;
+  end: HHmm;
+  categories: EventCategory[];
   published: boolean;
-};
-
-export type EventRegistration = {
-  id: string;
-  eventId: string;
-  bookingId?: string;
-  riderName: string;
-  email: string;
+  photoSlot?: string;
   createdAt: string;
-};
+  userCreated?: boolean;
+}
 
-export type CoachingProgramme = {
-  id: string;
-  name: LocalizedText;
-  summary: LocalizedText;
-  level: Level | "all";
-  ageRange: LocalizedText;
-  duration: LocalizedText;
-  groupSize: LocalizedText;
-  equipment: LocalizedText[];
-  outcomes: LocalizedText[];
-  instructor: LocalizedText;
-  priceHKD: number | null;
-  /** days from today until the next demo session */
-  nextSessionOffsetDays: number;
-  experienceId: ExperienceId;
-  icon: string;
-};
+/* ---------- Weather & operations ---------- */
 
-export type Membership = {
-  id: string;
-  riderName: string;
-  email: string;
-  phone: string;
-  tier: "none" | "monthly" | "annual" | "family";
-  status: "active" | "expired" | "pending";
-  startsOn: string;
-  endsOn: string;
-  visits: number;
-  isDemo?: boolean;
-};
+export type WarningCode = "black_rain" | "red_rain" | "amber_rain" | "t8" | "t3" | "very_hot" | "thunderstorm";
 
-export type Waiver = {
+export interface Closure {
   id: string;
-  version: string;
-  bookingId: string;
-  signerName: string;
-  signerType: "adult" | "guardian";
-  minorNames: string[];
-  acceptedAt: string;
-  consentToDataUse: boolean;
-};
-
-export type PromotionCode = {
-  id: string;
-  code: string;
-  kind: "percent" | "fixed";
-  value: number;
-  active: boolean;
-  usageLimit: number | null;
-  used: number;
-  expiresOn?: string;
-  description: string;
-  /** Referral codes credit a rider rather than discount staff-issued campaigns */
-  referral?: boolean;
-};
-
-export type GroupEnquiry = {
-  id: string;
-  segment: "school" | "youth" | "corporate" | "birthday" | "private" | "brand";
-  organisation: string;
-  contactName: string;
-  email: string;
-  phone: string;
-  groupSize: number;
-  preferredDate?: string;
-  addOns: ("coaching" | "rental" | "catering" | "photography")[];
-  message: string;
-  status: "new" | "contacted" | "quoted" | "won" | "lost";
+  date: ISODate;
+  start?: HHmm;
+  end?: HHmm;
+  warning: WarningCode;
   createdAt: string;
-  isDemo?: boolean;
-};
+  affectedBookingIds: string[];
+  messageSent: boolean;
+  reopenedAt?: string;
+  messageEn: string;
+  messageZh: string;
+}
 
-export type Enquiry = {
-  id: string;
-  topic: "general" | "booking" | "group" | "partnership";
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-  status: "new" | "replied" | "closed";
-  consent: boolean;
-  createdAt: string;
-  isDemo?: boolean;
-};
+/** Sample conditions shown on the site. Real version: HK Observatory open data API. */
+export interface Conditions {
+  /** Manually set warning (Admin → Weather). null = no warning in force. */
+  warning: WarningCode | null;
+  updatedAt: string;
+}
 
-export type WaitlistEntry = {
+export interface ClubApplication {
   id: string;
   name: string;
-  email: string;
   phone: string;
-  experienceId: ExperienceId;
-  date: string;
-  period: DayPeriod;
-  partySize: number;
-  status: "waiting" | "notified" | "booked" | "removed";
+  email: string;
+  age: number;
+  level: Experience;
   createdAt: string;
-  isDemo?: boolean;
-};
-
-export type ParkStatus = {
-  open: boolean;
-  /** Free-text reason shown when closed (weather etc.) */
-  note: LocalizedText;
-  updatedAt: string;
-};
-
-export type Announcement = {
-  id: string;
-  active: boolean;
-  tone: "info" | "warning";
-  text: LocalizedText;
-  linkHref?: string;
-  updatedAt: string;
-};
-
-export type CapacityOverride = {
-  /** `${date}_${period}` */
-  slotId: string;
-  capacity?: number;
-  blocked?: boolean;
-};
-
-export type BookingDraft = {
-  step: number;
-  experienceId?: ExperienceId;
-  eventId?: string;
-  date?: string;
-  period?: DayPeriod;
-  participants: ParticipantInput[];
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  promoCode?: string;
-  updatedAt: string;
-};
+}

@@ -1,149 +1,122 @@
--- AKKI Bike Park: Supabase schema (Postgres). Run in the Supabase SQL editor.
--- Card details are NEVER stored: only provider payment ids.
+-- AKKI Bike Park: Postgres schema matching src/types (camelCase there, snake_case here).
+-- Times are Hong Kong local (date + time without zone); money is whole HKD.
 
 create extension if not exists "pgcrypto";
 
-create table users (
-  id uuid primary key references auth.users on delete cascade,
-  email text not null, name text, phone text,
-  role text not null default 'rider' check (role in ('rider','staff','admin')),
-  language text not null default 'zh', marketing_consent boolean not null default false,
+create type booking_source as enum ('website', 'klook', 'whatsapp', 'walkin');
+create type booking_kind as enum ('lesson', 'pump', 'event');
+create type slot_scope as enum ('all', 'pump', 'lessons');
+create type block_reason as enum ('maintenance', 'private', 'weather', 'event', 'other');
+create type warning_code as enum ('black_rain', 'red_rain', 'amber_rain', 't8', 't3', 'very_hot', 'thunderstorm');
+
+create table lessons (
+  id text primary key,                         -- 'foundation' | 'advanced'
+  name_en text not null, name_zh text not null,
+  level text not null, duration_min int not null default 120,
+  capacity int not null default 8, min_age int not null default 8,
+  price_hkd int not null
+);
+
+create table coaches (
+  id text primary key, name_en text not null, name_zh text not null,
+  role_en text, role_zh text, languages text[] not null default '{}', photo_url text
+);
+
+create table lesson_templates (                -- recurring weekly lesson times
+  id text primary key, lesson_id text references lessons, weekday smallint not null check (weekday between 0 and 6),
+  start_time time not null, language text not null check (language in ('en','yue')),
+  coach_id text references coaches, capacity int not null, active boolean not null default true
+);
+
+create table pump_hours (
+  weekday smallint primary key check (weekday between 0 and 6),
+  open boolean not null, start_time time not null, end_time time not null
+);
+
+create table schedule_settings (
+  id int primary key default 1 check (id = 1),
+  slot_minutes int not null default 60, slot_capacity int not null default 12
+);
+
+create table blocks (                          -- maintenance, private hire, event days, weather closures
+  id uuid primary key default gen_random_uuid(), date date not null, start_time time, end_time time,
+  scope slot_scope not null default 'all', reason block_reason not null, note text, closure_id uuid
+);
+
+create table riders (
+  id uuid primary key default gen_random_uuid(), name text not null, phone text unique not null, email text,
+  age int, height_cm int, experience text, club_member boolean not null default false, notes text,
   created_at timestamptz not null default now()
 );
 
-create table rider_profiles (
-  id uuid primary key default gen_random_uuid(), user_id uuid references users on delete cascade,
-  name text not null, age int not null check (age between 3 and 99),
-  level text not null check (level in ('beginner','intermediate','advanced')),
-  emergency_contact_name text not null, emergency_contact_phone text not null
-);
-
-create table guardians (
-  id uuid primary key default gen_random_uuid(), rider_profile_id uuid references rider_profiles on delete cascade,
-  name text not null, relationship text not null, phone text not null, email text not null,
-  consent_given boolean not null default false, consent_at timestamptz
-);
-
-create table experiences (
-  id text primary key, name_en text not null, name_zh text not null, price_hkd int not null,
-  pricing_unit text not null default 'person', min_participants int not null default 1, max_participants int not null default 8,
-  active boolean not null default true
-);
-
-create table time_slots (
-  id text primary key, date date not null, period text not null check (period in ('morning','afternoon','fullday')),
-  start_time time not null, end_time time not null, capacity int not null, booked int not null default 0, blocked boolean not null default false,
-  unique (date, period)
+create table pack_holdings (
+  id uuid primary key default gen_random_uuid(), rider_id uuid references riders on delete cascade,
+  lesson_id text references lessons, total int not null, remaining int not null check (remaining >= 0),
+  purchased_on date not null, expires_on date not null
 );
 
 create table events (
-  id uuid primary key default gen_random_uuid(), slug text unique not null, type text not null,
-  title_en text not null, title_zh text not null, summary_en text, summary_zh text, description_en text, description_zh text,
-  date date not null, start_time time, end_time time, level text, min_age int default 0, max_age int,
-  capacity int not null, registration_deadline date, price_hkd int, is_demo boolean not null default false, published boolean not null default false
+  id uuid primary key default gen_random_uuid(), slug text unique not null,
+  type text not null check (type in ('race','nightjam','groupride','kidscamp')),
+  title_en text not null, title_zh text not null, summary_en text, summary_zh text, body_en text, body_zh text,
+  date date not null, start_time time not null, end_time time not null,
+  photo_url text, published boolean not null default false, created_at timestamptz not null default now()
 );
 
+create table event_categories (
+  id text primary key, event_id uuid references events on delete cascade,
+  name_en text not null, name_zh text not null, ages_en text, ages_zh text,
+  capacity int not null, price_hkd int not null default 0
+);
+
+-- target_id: lesson session id (les_<lesson>_<date>_<HHmm>), pump slot id (pt_<date>_<HHmm>) or event id.
+-- Sessions and slots are derived from templates/hours, so bookings reference them by these stable ids.
 create table bookings (
-  id uuid primary key default gen_random_uuid(), reference text unique not null,
-  experience_id text references experiences, event_id uuid references events,
-  date date not null, period text not null,
-  contact_name text not null, contact_email text not null, contact_phone text not null,
-  status text not null default 'pending', payment_status text not null default 'unpaid',
-  payment_provider text, payment_provider_id text,  -- provider reference only, never card data
-  subtotal int not null, discount int not null default 0, total int not null, promo_code text,
-  terms_accepted boolean not null, marketing_consent boolean not null default false,
+  id uuid primary key default gen_random_uuid(), ref text unique not null,
+  kind booking_kind not null, target_id text not null, event_category_id text references event_categories,
+  date date not null, start_time time not null, end_time time not null,
+  rider_id uuid references riders, rider_name text not null, phone text not null,
+  riders int not null check (riders > 0),
+  rentals jsonb not null default '{"bikes":{},"helmets":0}',
+  source booking_source not null,
+  status text not null default 'confirmed' check (status in ('confirmed','cancelled')),
+  payment text not null default 'unpaid' check (payment in ('paid','unpaid','refunded')),
+  attendance text not null default 'pending' check (attendance in ('pending','attended','no_show')),
+  price_hkd int not null, used_pack boolean not null default false,
+  external_ref text,                            -- e.g. Klook order number
+  payment_provider_ref text,                    -- Stripe / PayMe / FPS reference, never card data
+  notes text, waiver_signed boolean not null default false,
+  flag_closure_id uuid, flag_notified boolean,
   created_at timestamptz not null default now()
 );
-
-create table booking_participants (
-  id uuid primary key default gen_random_uuid(), booking_id uuid references bookings on delete cascade,
-  name text not null, age int not null, level text not null, emergency_name text not null, emergency_phone text not null,
-  bike text not null, helmet boolean default false, gloves boolean default false, pads boolean default false,
-  coaching_add_on boolean default false, guardian jsonb
-);
-
-create table event_registrations (
-  id uuid primary key default gen_random_uuid(), event_id uuid references events on delete cascade,
-  booking_id uuid references bookings, rider_name text not null, email text not null, created_at timestamptz default now()
-);
-
-create table coaching_programmes (
-  id text primary key, name_en text, name_zh text, level text, price_hkd int, active boolean default true
-);
-
-create table memberships (
-  id uuid primary key default gen_random_uuid(), user_id uuid references users, rider_name text not null, email text, phone text,
-  tier text not null, status text not null default 'pending', starts_on date, ends_on date, visits int default 0
-);
+create index on bookings (target_id) where status = 'confirmed';
+create index on bookings (date);
 
 create table waivers (
-  id uuid primary key default gen_random_uuid(), version text not null, booking_id uuid references bookings on delete cascade,
-  signer_name text not null, signer_type text not null check (signer_type in ('adult','guardian')),
-  minor_names text[] default '{}', accepted_at timestamptz not null default now(), consent_to_data_use boolean not null default false
+  id uuid primary key default gen_random_uuid(), booking_id uuid references bookings on delete cascade,
+  signer_name text not null, guardian boolean not null default false, signature_png text not null,
+  version text not null, signed_at timestamptz not null default now()
 );
 
-create table promotion_codes (
-  id uuid primary key default gen_random_uuid(), code text unique not null, kind text not null check (kind in ('percent','fixed')),
-  value int not null, active boolean not null default true, usage_limit int, used int not null default 0, expires_on date,
-  referral boolean not null default false, description text
+create table closures (
+  id uuid primary key default gen_random_uuid(), date date not null, start_time time, end_time time,
+  warning warning_code not null, message_en text not null, message_zh text not null,
+  message_sent boolean not null default false, reopened_at timestamptz, created_at timestamptz not null default now()
 );
 
-create table group_enquiries (
-  id uuid primary key default gen_random_uuid(), segment text not null, organisation text not null, contact_name text not null,
-  email text not null, phone text not null, group_size int not null, preferred_date date, add_ons text[] default '{}', message text,
-  status text not null default 'new', created_at timestamptz not null default now()
+create table club_applications (
+  id uuid primary key default gen_random_uuid(), name text not null, phone text not null, email text not null,
+  age int not null, level text not null, created_at timestamptz not null default now()
 );
 
-create table enquiries (
-  id uuid primary key default gen_random_uuid(), topic text not null, name text not null, email text not null, phone text,
-  message text not null, consent boolean not null, status text not null default 'new', created_at timestamptz not null default now()
-);
+-- Capacity: run inside a transaction when booking/moving:
+--   select coalesce(sum(riders),0) from bookings where target_id = $1 and status = 'confirmed' for update;
+-- and reject when booked + requested > capacity (same rule as src/lib/services.ts).
 
-create table waitlist (
-  id uuid primary key default gen_random_uuid(), name text not null, email text not null, phone text not null,
-  experience_id text, date date not null, period text not null, party_size int not null default 1,
-  status text not null default 'waiting', created_at timestamptz not null default now()
-);
-
-create table newsletter_subscribers (
-  id uuid primary key default gen_random_uuid(), email text unique not null, consent boolean not null, created_at timestamptz default now()
-);
-
-create table park_status (
-  id int primary key default 1 check (id = 1), open boolean not null default true,
-  note_en text, note_zh text, updated_at timestamptz default now()
-);
-
-create table announcements (
-  id uuid primary key default gen_random_uuid(), active boolean not null default false, tone text default 'info',
-  text_en text, text_zh text, link_href text, updated_at timestamptz default now()
-);
-
--- Row level security: public tables are readable, everything personal is server/staff only.
-alter table users enable row level security;
-alter table rider_profiles enable row level security;
-alter table guardians enable row level security;
+alter table riders enable row level security;
+alter table pack_holdings enable row level security;
 alter table bookings enable row level security;
-alter table booking_participants enable row level security;
 alter table waivers enable row level security;
-alter table enquiries enable row level security;
-alter table group_enquiries enable row level security;
-alter table waitlist enable row level security;
-alter table newsletter_subscribers enable row level security;
-alter table memberships enable row level security;
-alter table event_registrations enable row level security;
-
+alter table club_applications enable row level security;
 alter table events enable row level security;
-create policy "public read published events" on events for select using (published);
-alter table park_status enable row level security;
-create policy "public read park status" on park_status for select using (true);
-alter table announcements enable row level security;
-create policy "public read active announcements" on announcements for select using (active);
-alter table time_slots enable row level security;
-create policy "public read slots" on time_slots for select using (true);
-alter table experiences enable row level security;
-create policy "public read experiences" on experiences for select using (active);
-
--- Riders read their own bookings. Inserts happen through the service-role API routes.
-create policy "riders read own bookings" on bookings for select using (contact_email = (auth.jwt() ->> 'email'));
--- Staff access: add policies checking (select role from users where id = auth.uid()) in ('staff','admin').
+create policy "public reads published events" on events for select using (published);

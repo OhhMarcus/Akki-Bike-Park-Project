@@ -1,27 +1,72 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { defaultSchedule } from "@/config/schedule";
 import type {
-  Announcement, Booking, BookingDraft, CapacityOverride, Enquiry, EventRegistration, GroupEnquiry,
-  ParkEvent, ParkStatus, PromotionCode, WaitlistEntry, CoachingProgramme,
+  Block, Booking, ClubApplication, Closure, Conditions, ParkEvent, Rider, ScheduleSettings,
 } from "@/types";
-import {
-  seedAnnouncement, seedBookings, seedEnquiries, seedGroupEnquiries,
-  seedParkStatus, seedPromos, seedWaitlist,
-} from "@/content/seed";
-import { getSeedEvents } from "@/content/events";
-import { coachingProgrammes } from "@/content/coaching";
+import { generateSeed, type SeedData } from "./seed";
+import { hkToday } from "./time";
 
 /**
- * Local persistence layer. Uses localStorage so the prototype runs with zero
- * backend. Each collection stays `undefined` in storage until first edited, so
- * seed content (with dates relative to today) never goes stale.
+ * Demo persistence: browser localStorage, shared by the public site and the
+ * admin so a booking made on one shows up on the other (also across tabs).
  *
- * Production: replace the read/write in `readRaw`/`writeRaw` with Supabase
- * queries (same collection names as tables in supabase/schema.sql).
+ * Every collection reads its sample seed until first written. Swap this file
+ * for API calls (same shapes) to connect a real database.
  */
-const PREFIX = "akki:";
-const EVENT = "akki-store-change";
+
+export type Prefs = { swapMarkers: boolean };
+export type SavedRider = { name: string; phone: string };
+
+export type StoreShape = {
+  bookings: Booking[];
+  riders: Rider[];
+  events: ParkEvent[];
+  blocks: Block[];
+  settings: ScheduleSettings;
+  closures: Closure[];
+  conditions: Conditions;
+  club: ClubApplication[];
+  prefs: Prefs;
+  savedRider: SavedRider | null;
+};
+export type StoreKey = keyof StoreShape;
+
+const PREFIX = "akki2:";
+const EVENT = "akki2-store";
+
+/* ---------- seed (computed once per day, identical on server and client) ---------- */
+
+let seedCache: SeedData | null = null;
+export function getSeed(): SeedData {
+  const today = hkToday();
+  if (!seedCache || seedCache.seedDate !== today) seedCache = generateSeed(today);
+  return seedCache;
+}
+
+const STATIC_SEEDS = {
+  settings: defaultSchedule,
+  closures: [] as Closure[],
+  conditions: { warning: null, updatedAt: "2026-01-01T00:00:00.000Z" } as Conditions,
+  club: [] as ClubApplication[],
+  prefs: { swapMarkers: true } as Prefs,
+  savedRider: null as SavedRider | null,
+};
+
+function seedFor<K extends StoreKey>(key: K): StoreShape[K] {
+  const s = getSeed();
+  switch (key) {
+    case "bookings": return s.bookings as StoreShape[K];
+    case "riders": return s.riders as StoreShape[K];
+    case "events": return s.events as StoreShape[K];
+    case "blocks": return s.blocks as StoreShape[K];
+    default: return STATIC_SEEDS[key as keyof typeof STATIC_SEEDS] as StoreShape[K];
+  }
+}
+
+/* ---------- raw storage ---------- */
+
 const cache = new Map<string, { raw: string | null; value: unknown }>();
 
 function readRaw(key: string): string | null {
@@ -37,25 +82,34 @@ function writeRaw(key: string, value: unknown) {
     if (value === undefined) window.localStorage.removeItem(PREFIX + key);
     else window.localStorage.setItem(PREFIX + key, JSON.stringify(value));
   } catch {
-    /* storage blocked (private mode): state simply will not persist */
+    /* storage full or blocked: the change lives for this page view only */
   }
   window.dispatchEvent(new Event(EVENT));
 }
 
-function snapshot<T>(key: string, seed: T): T {
+/** Current value (browser). On the server this returns the seed. */
+export function getState<K extends StoreKey>(key: K): StoreShape[K] {
+  if (typeof window === "undefined") return seedFor(key);
   const raw = readRaw(key);
   const hit = cache.get(key);
-  if (hit && hit.raw === raw) return hit.value as T;
-  let value: T = seed;
-  if (raw != null) {
+  const seed = seedFor(key);
+  if (hit && hit.raw === raw && (raw !== null || hit.value === seed)) return hit.value as StoreShape[K];
+  let value: StoreShape[K] = seed;
+  if (raw !== null) {
     try {
-      value = JSON.parse(raw) as T;
+      value = JSON.parse(raw) as StoreShape[K];
     } catch {
       value = seed;
     }
   }
   cache.set(key, { raw, value });
   return value;
+}
+
+export function setState<K extends StoreKey>(key: K, next: StoreShape[K] | ((prev: StoreShape[K]) => StoreShape[K])) {
+  const prev = getState(key);
+  const value = typeof next === "function" ? (next as (p: StoreShape[K]) => StoreShape[K])(prev) : next;
+  writeRaw(key, value);
 }
 
 function subscribe(cb: () => void) {
@@ -67,87 +121,73 @@ function subscribe(cb: () => void) {
   };
 }
 
-export function useStored<T>(key: string, seed: T) {
+export function useStore<K extends StoreKey>(key: K) {
   const value = useSyncExternalStore(
     subscribe,
-    () => snapshot(key, seed),
-    () => seed,
+    () => getState(key),
+    () => seedFor(key),
   );
-  const set = useCallback(
-    (next: T | ((prev: T) => T)) => {
-      const prev = snapshot(key, seed);
-      writeRaw(key, typeof next === "function" ? (next as (p: T) => T)(prev) : next);
-    },
-    [key, seed],
-  );
-  const reset = useCallback(() => writeRaw(key, undefined), [key]);
-  return [value, set, reset] as const;
+  const set = useCallback((next: StoreShape[K] | ((prev: StoreShape[K]) => StoreShape[K])) => setState(key, next), [key]);
+  return [value, set] as const;
 }
 
-/** True after hydration. Use to avoid flashing seed data before stored data loads. */
-export function useHydrated() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+/* ---------- daily refresh & reset ---------- */
+
+const DATA_KEYS: StoreKey[] = ["bookings", "riders", "events", "blocks"];
+
+/**
+ * Sample data is relative to today. When the date changes, rebuild the sample
+ * records and keep anything created during the demo (userCreated) so nothing
+ * the owner tried disappears.
+ */
+export function refreshSampleData() {
+  if (typeof window === "undefined") return;
+  const today = hkToday();
+  let stored: string | null = null;
+  try {
+    stored = window.localStorage.getItem(PREFIX + "seedDate");
+  } catch {
+    return;
+  }
+  if (stored === today) return;
+  if (stored) {
+    for (const key of DATA_KEYS) {
+      const raw = readRaw(key);
+      if (raw === null) continue;
+      try {
+        const old = JSON.parse(raw) as { id: string; userCreated?: boolean }[];
+        const keep = old.filter((x) => x.userCreated);
+        const fresh = seedFor(key) as unknown as { id: string }[];
+        const ids = new Set(keep.map((x) => x.id));
+        writeRaw(key, [...keep, ...fresh.filter((x) => !ids.has(x.id))]);
+      } catch {
+        writeRaw(key, undefined);
+      }
+    }
+  }
+  try {
+    window.localStorage.setItem(PREFIX + "seedDate", today);
+  } catch {
+    /* ignore */
+  }
 }
 
-// Stable seed references (identity matters for useSyncExternalStore)
-const SEED_EVENTS = getSeedEvents();
-const EMPTY_OVERRIDES: CapacityOverride[] = [];
-const EMPTY_REGS: EventRegistration[] = [];
-const EMPTY_STR: string[] = [];
-
-export const useBookings = () => useStored<Booking[]>("bookings", seedBookings);
-export const useEvents = () => useStored<ParkEvent[]>("events", SEED_EVENTS);
-export const useProgrammes = () => useStored<CoachingProgramme[]>("programmes", coachingProgrammes);
-export const usePromos = () => useStored<PromotionCode[]>("promos", seedPromos);
-export const useAnnouncement = () => useStored<Announcement>("announcement", seedAnnouncement);
-export const useParkStatus = () => useStored<ParkStatus>("parkStatus", seedParkStatus);
-export const useEnquiries = () => useStored<Enquiry[]>("enquiries", seedEnquiries);
-export const useGroupEnquiries = () => useStored<GroupEnquiry[]>("groupEnquiries", seedGroupEnquiries);
-export const useWaitlist = () => useStored<WaitlistEntry[]>("waitlist", seedWaitlist);
-export const useOverrides = () => useStored<CapacityOverride[]>("overrides", EMPTY_OVERRIDES);
-export const useRegistrations = () => useStored<EventRegistration[]>("registrations", EMPTY_REGS);
-export const useNewsletter = () => useStored<string[]>("newsletter", EMPTY_STR);
-
-const EMPTY_DRAFT: BookingDraft | null = null;
-export const useDraft = () => useStored<BookingDraft | null>("draft", EMPTY_DRAFT);
-
-const NO_SESSION: { email: string; at: string } | null = null;
-export const useAdminSession = () => useStored<{ email: string; at: string } | null>("adminSession", NO_SESSION);
-
-/** Ids of bookings created in THIS browser: powers "My Bookings" without accounts. */
-export const useMyBookingRefs = () => useStored<string[]>("myBookingRefs", EMPTY_STR);
-
-/** Non-hook helpers (usable in event handlers). */
-export function appendToCollection<T>(key: string, seed: T[], item: T) {
-  const current = snapshot<T[]>(key, seed);
-  writeRaw(key, [item, ...current]);
-}
-
-export function resetAllDemoData() {
+export function resetDemoData() {
   try {
     Object.keys(window.localStorage)
-      .filter((k) => k.startsWith(PREFIX))
+      .filter((k) => k.startsWith(PREFIX) && k !== `${PREFIX}prefs`)
       .forEach((k) => window.localStorage.removeItem(k));
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   cache.clear();
   window.dispatchEvent(new Event(EVENT));
 }
 
-export const storeKeys = {
-  bookings: ["bookings", seedBookings],
-  waitlist: ["waitlist", seedWaitlist],
-  enquiries: ["enquiries", seedEnquiries],
-  groupEnquiries: ["groupEnquiries", seedGroupEnquiries],
-  registrations: ["registrations", EMPTY_REGS],
-  myBookingRefs: ["myBookingRefs", EMPTY_STR],
-} as const;
+/* ---------- hydration ---------- */
 
-/** Convenience: add a booking to the store plus the "my bookings" list. */
-export function saveBooking(b: Booking) {
-  appendToCollection("bookings", seedBookings, b);
-  appendToCollection("myBookingRefs", EMPTY_STR, b.reference);
+const noop = () => () => {};
+/** false during SSR and the hydration render, true afterwards. */
+export function useHydrated() {
+  return useSyncExternalStore(noop, () => true, () => false);
 }

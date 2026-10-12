@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/config/site";
-import { getSeedEvents } from "@/content/events";
-
-const routes = ["", "/park", "/booking", "/events", "/coaching", "/groups", "/visit", "/contact", "/my-bookings", "/privacy", "/terms", "/cancellation", "/waiver"];
+import { site } from "@/config/site";
+import { seedEvents } from "@/content/events";
+import { hkToday } from "@/lib/time";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const routes = ["", "/lessons", "/lessons/book", "/pump-track", "/events", "/club", "/visit"];
   return [
-    ...routes.map((r) => ({ url: `${siteConfig.url}${r}`, lastModified: now, changeFrequency: "weekly" as const, priority: r === "" ? 1 : 0.7 })),
-    ...getSeedEvents().map((e) => ({ url: `${siteConfig.url}/events/${e.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
+    ...routes.map((r) => ({ url: `${site.url}${r}`, lastModified: now, changeFrequency: "daily" as const, priority: r === "" ? 1 : 0.8 })),
+    ...seedEvents(hkToday()).map((e) => ({ url: `${site.url}/events/${e.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.6 })),
   ];
 }

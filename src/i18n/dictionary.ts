@@ -1,34 +1,35 @@
 import { commonMessages } from "./messages/common";
-import { homeMessages } from "./messages/home";
-import { parkMessages } from "./messages/park";
-import { bookingMessages } from "./messages/booking";
-import { eventsMessages } from "./messages/events";
-import { coachingMessages } from "./messages/coaching";
-import { groupsMessages } from "./messages/groups";
-import { visitMessages } from "./messages/visit";
-import { contactMessages } from "./messages/contact";
+import { bookMessages } from "./messages/book";
 import { adminMessages } from "./messages/admin";
-import { proposalMessages } from "./messages/proposal";
-import { legalMessages } from "./messages/legal";
+import { homeMessages } from "./messages/home";
+import { lessonsMessages } from "./messages/lessons";
+import { pumpMessages } from "./messages/pump";
+import { eventsMessages } from "./messages/events";
+import { clubMessages } from "./messages/club";
+import { visitMessages } from "./messages/visit";
+import { adminOpsMessages } from "./messages/adminOps";
+import { adminPlanMessages } from "./messages/adminPlan";
+import { adminInsightsMessages } from "./messages/adminInsights";
 
 /**
- * Central translation dictionary. Every UI string lives in src/i18n/messages/*.ts
- * as `"key": { en: "...", zh: "..." }` so both languages sit side by side.
- * Traditional Chinese (zh) is the default language of the site.
+ * Every visible string, in English and Traditional Chinese (Hong Kong),
+ * including month/weekday names and date/time formats.
+ * Files live in src/i18n/messages/*.ts as `"key": m("English", "中文")`.
  */
 export const dictionary = {
   ...commonMessages,
-  ...homeMessages,
-  ...parkMessages,
-  ...bookingMessages,
-  ...eventsMessages,
-  ...coachingMessages,
-  ...groupsMessages,
-  ...visitMessages,
-  ...contactMessages,
+  ...bookMessages,
   ...adminMessages,
-  ...proposalMessages,
-  ...legalMessages,
+  ...homeMessages,
+  ...lessonsMessages,
+  ...pumpMessages,
+  ...eventsMessages,
+  ...clubMessages,
+  ...visitMessages,
+  ...adminOpsMessages,
+  ...adminPlanMessages,
+  ...adminInsightsMessages,
 };
 
 export type MessageKey = keyof typeof dictionary;
+export type PluralKey = { [K in MessageKey]: K extends `${infer B}.other` ? B : never }[MessageKey];

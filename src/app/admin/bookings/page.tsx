@@ -1,5 +1,3 @@
-import { BookingsAdmin } from "@/components/admin/BookingsAdmin";
-
-export default function AdminBookingsPage() {
-  return <BookingsAdmin />;
+export default function Page() {
+  return <h1 className="h-display text-4xl">bookings</h1>;
 }
