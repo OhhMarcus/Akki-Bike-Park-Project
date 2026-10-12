@@ -91,7 +91,7 @@ export function PaymentPicker({
                   <label
                     key={id}
                     className={cn(
-                      "flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border bg-card px-2 text-center text-sm font-semibold transition-colors",
+                      "flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border bg-card px-2 text-center text-sm font-semibold transition-colors [&:has(:focus-visible)]:shadow-[0_0_0_2px_#080808,0_0_0_4px_#EBB04A,-5px_0_10px_-1px_rgba(168,95,168,.9),5px_0_10px_-1px_rgba(111,177,198,.9)]",
                       active ? "border-transparent [background:linear-gradient(#1b1a1a,#1b1a1a)_padding-box,var(--grad)_border-box]" : "border-line hover:border-line-strong",
                     )}
                   >

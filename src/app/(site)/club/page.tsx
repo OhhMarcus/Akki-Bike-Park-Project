@@ -1,3 +1,11 @@
+import { dictionary } from "@/i18n/dictionary";
+import { buildMetadata } from "@/lib/seo";
+import { ClubPage } from "@/components/club/ClubPage";
+
+export function generateMetadata() {
+  return buildMetadata({ title: dictionary["club.meta.title"], description: dictionary["club.meta.description"], path: "/club" });
+}
+
 export default function Page() {
-  return <div className="container py-20"><h1 className="h1">club</h1></div>;
+  return <ClubPage />;
 }

@@ -113,7 +113,7 @@ export const commonMessages = {
   "park.open": m("Open now", "開放中"),
   "park.closed": m("Closed now", "休息中"),
   "park.closesAt": m("Open till {time}", "開放至{time}"),
-  "park.opensAt": m("Opens {day}, {time}", "{day}{time}開放"),
+  "park.opensAt": m("Next open: {day}, {time}", "{day}{time}開放"),
   "reason.hours": m("Outside opening hours", "非開放時間"),
   "reason.restday": m("Rest day", "休息日"),
   "reason.weather": m("Weather closure", "天氣關係暫停"),

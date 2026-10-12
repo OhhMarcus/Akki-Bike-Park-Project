@@ -50,7 +50,8 @@ const config: Config = {
       keyframes: {
         "fade-up": { from: { opacity: "0", transform: "translateY(8px)" }, to: { opacity: "1", transform: "none" } },
         pulse2: { "0%,100%": { opacity: "1" }, "50%": { opacity: ".35" } },
-        "sheet-in": { from: { transform: "translateY(16px)", opacity: "0" }, to: { transform: "none", opacity: "1" } },
+        // `translate` (not `transform`) so the desktop sheet keeps its -translate-x/y-1/2 centring after the animation
+        "sheet-in": { from: { translate: "0 16px", opacity: "0" }, to: { translate: "0 0", opacity: "1" } },
       },
       animation: {
         "fade-up": "fade-up .35s ease-out both",

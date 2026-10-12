@@ -71,7 +71,8 @@ export function createFormatters(locale: Locale, t: T) {
     money: (n: number, opts?: { zeroAsFree?: boolean }) =>
       n === 0 && opts?.zeroAsFree !== false ? t("fmt.free") : t("fmt.money", { n: n.toLocaleString("en-HK") }),
     /** 2 hours · 2 小時 */
-    duration: (min: number) => (min % 60 === 0 ? t("fmt.hours", { n: min / 60 }) : min > 60 ? t("fmt.hoursMinutes", { h: Math.floor(min / 60), m: min % 60 }) : t("fmt.minutes", { n: min })),
+    duration: (min: number) =>
+      min === 60 ? t("fmt.hour") : min % 60 === 0 ? t("fmt.hours", { n: min / 60 }) : min > 60 ? t("fmt.hoursMinutes", { h: Math.floor(min / 60), m: min % 60 }) : t("fmt.minutes", { n: min }),
     temp: (c: number) => t("fmt.temp", { n: c }),
     number: (n: number) => n.toLocaleString("en-HK"),
     /** Split countdown parts; labels via t("fmt.cd.*") */

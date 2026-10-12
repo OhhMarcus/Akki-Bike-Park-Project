@@ -13,7 +13,7 @@ export function Headline({
   const m = /^(.*?)\*(.+?)\*(.*)$/s.exec(text);
   return (
     <div className={cn(align === "center" && "flex flex-col items-center text-center")}>
-      <Tag className={cn("h2", className)}>
+      <Tag className={cn(!/(^|\s)h[13](\s|$)/.test(className ?? "") && "h2", className)}>
         {m ? (
           <>
             {m[1]}

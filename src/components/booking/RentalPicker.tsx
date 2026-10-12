@@ -38,7 +38,7 @@ export function RentalPicker({
           {sizes.map((s) => {
             const n = value.bikes[s] ?? 0;
             return (
-              <div key={s} className={cn("flex items-center justify-between gap-2 rounded-lg border bg-card px-3 py-2", s === suggested ? "border-fg/50" : "border-line")}>
+              <div key={s} className={cn("flex flex-col items-start gap-2 rounded-lg border bg-card px-3 py-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between", s === suggested ? "border-fg/50" : "border-line")}>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold">{t(`size.${s}`)}</span>
                   {s === suggested && <span className="block text-[11px] font-semibold text-brand-sky">{t("book.rent.suggested", { size: t(`size.${s}`) })}</span>}

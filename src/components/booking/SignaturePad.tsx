@@ -14,6 +14,8 @@ export function SignaturePad({ onChange, error, id = "signature" }: { onChange: 
   const drawing = useRef(false);
   const last = useRef<{ x: number; y: number } | null>(null);
   const [signed, setSigned] = useState(false);
+  /** read by the ResizeObserver; keeping `signed` out of the effect deps stops a re-setup wiping the first stroke */
+  const signedRef = useRef(false);
 
   const setup = useCallback(() => {
     const c = canvas.current;
@@ -33,11 +35,11 @@ export function SignaturePad({ onChange, error, id = "signature" }: { onChange: 
   useEffect(() => {
     setup();
     const ro = new ResizeObserver(() => {
-      if (!signed) setup();
+      if (!signedRef.current) setup();
     });
     if (canvas.current) ro.observe(canvas.current);
     return () => ro.disconnect();
-  }, [setup, signed]);
+  }, [setup]);
 
   const point = (e: React.PointerEvent) => {
     const r = canvas.current!.getBoundingClientRect();
@@ -63,12 +65,14 @@ export function SignaturePad({ onChange, error, id = "signature" }: { onChange: 
     if (!drawing.current) return;
     drawing.current = false;
     last.current = null;
+    signedRef.current = true;
     setSigned(true);
     onChange(canvas.current!.toDataURL("image/png"));
   };
   const clear = () => {
     const c = canvas.current!;
     c.getContext("2d")!.clearRect(0, 0, c.width, c.height);
+    signedRef.current = false;
     setSigned(false);
     onChange(null);
     setup();
