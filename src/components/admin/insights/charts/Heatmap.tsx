@@ -114,7 +114,7 @@ export function Heatmap({ label, rows, cols, tip, describe, defaultCell, labelWi
           tabIndex={0}
           role="group"
           aria-roledescription={t("adminInsights.chart.roledesc")}
-          aria-label={`${label}. ${t("adminInsights.chart.keys")}`}
+          aria-label={`${label}${t("adminInsights.sep.sentence")}${t("adminInsights.chart.keys")}`}
           onKeyDown={onKey}
           onFocus={(e) => {
             if (!active && e.currentTarget.matches(":focus-visible")) move(defaultCell?.r ?? 0, defaultCell?.c ?? 0);

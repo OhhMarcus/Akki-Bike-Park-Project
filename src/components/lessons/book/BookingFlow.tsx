@@ -39,8 +39,10 @@ export function LessonBookingFlow() {
   const params = useSearchParams();
   const lessonId: LessonId = params.get("lesson") === "advanced" ? "advanced" : "foundation";
   const buyPack = params.get("pack") === "1";
-  const rawDate = params.get("date");
-  const date = rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
+  const rawDate = params.get("date") ?? "";
+  // a real calendar date only (2026-02-30 or 2026-13-45 are ignored)
+  const ms = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? Date.parse(`${rawDate}T00:00:00Z`) : NaN;
+  const date = !Number.isNaN(ms) && new Date(ms).toISOString().slice(0, 10) === rawDate ? rawDate : null;
   return <Flow key={`${lessonId}:${buyPack}:${date}`} initialLesson={lessonId} initialPack={buyPack} initialDate={date} />;
 }
 
@@ -347,7 +349,10 @@ function Flow({ initialLesson, initialPack, initialDate }: { initialLesson: Less
   const inFlow = step < STEP.done;
   const total = (
     <span className="min-w-0">
-      <span className="block text-[11px] font-semibold uppercase tracking-wide text-muted">{t("label.total")}</span>
+      <span className="block truncate text-[11px] font-semibold uppercase tracking-wide text-muted">
+        {t("label.total")}
+        {draft.date && today ? ` · ${fmt.dateWeekday(draft.date)}` : null}
+      </span>
       <span className="h-display block text-2xl tabular">{fmt.money(q.total)}</span>
     </span>
   );

@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import { NextSessions } from "./NextSessions";
 
 /** Triangle bullet, a nod to the park's tribar pattern. */
-export function TriBullet({ className }: { className?: string }) {
-  return <span aria-hidden className={cn("mt-[5px] h-0 w-0 shrink-0 border-y-[5px] border-l-[7px] border-y-transparent border-l-fg/60", className)} />;
+function TriBullet() {
+  return <span aria-hidden className="mt-[5px] h-0 w-0 shrink-0 border-y-[5px] border-l-[7px] border-y-transparent border-l-fg/60" />;
 }
 
 /** One class: photo header, facts, what you learn, next sessions, price and the Book CTA. */

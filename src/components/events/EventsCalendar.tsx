@@ -76,7 +76,7 @@ export function EventsCalendar({
             <div
               className={cn(
                 "flex h-full min-h-[118px] flex-col gap-1.5 rounded-md border p-1.5 xl:p-2",
-                isToday ? "border-fg/60 bg-card-2" : list.length ? "border-line-strong bg-card-2" : "border-line/70 bg-ink/40",
+                isToday ? "border-fg/60 bg-card-2" : list.length ? "border-line-strong bg-card-2" : past ? "border-line/40" : "border-line/70 bg-ink/40",
               )}
             >
               <div aria-hidden className="flex items-center justify-between gap-1 px-0.5 pt-0.5">

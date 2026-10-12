@@ -145,6 +145,7 @@ export function StepClassDate({
                 ))}
               </ul>
             </div>
+            <p className="border-t border-line pt-4 text-xs text-muted">{t("lessons.other.klook")}</p>
           </div>
         </div>
       </fieldset>

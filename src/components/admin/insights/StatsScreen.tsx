@@ -117,6 +117,7 @@ function StatsBody({ today, range }: { today: ISODate; range: RangeKey }) {
 
   const week = range === "week";
   const wdStyle = locale === "zh" ? "long" : "short";
+  const sep = { sentence: t("adminInsights.sep.sentence"), clause: t("adminInsights.sep.clause"), label: t("adminInsights.sep.label") };
   const pctText = (r: number | null) => (r === null ? t("adminInsights.dash") : t("adminInsights.pct", { n: pct(r) }));
   const money = (n: number) => fmt.money(n, { zeroAsFree: false });
   const perWeek = (n: number) => (T.days > 0 ? n / (T.days / 7) : 0);
@@ -239,10 +240,10 @@ function StatsBody({ today, range }: { today: ISODate; range: RangeKey }) {
   const describeBookings = (i: number) =>
     [
       dayTitle(cur.days[i]),
-      [curName, tn("adminInsights.daily.value", bookingsCur[i])].filter(Boolean).join(": "),
-      bookingsPrev ? `${lastLabel}: ${tn("adminInsights.daily.value", bookingsPrev[i])}` : null,
+      [curName, tn("adminInsights.daily.value", bookingsCur[i])].filter(Boolean).join(sep.label),
+      bookingsPrev ? [lastLabel, tn("adminInsights.daily.value", bookingsPrev[i])].join(sep.label) : null,
       points[i].upcoming ? t("adminInsights.chart.upcoming") : null,
-    ].filter(Boolean).join(". ");
+    ].filter(Boolean).join(sep.sentence);
 
   const occCur = curStats.map(occupancy);
   const occPrev = week && prevStats ? prevStats.map(occupancy) : null;
@@ -267,9 +268,9 @@ function StatsBody({ today, range }: { today: ISODate; range: RangeKey }) {
   });
   const describeOcc = (i: number) => {
     const tip = occTip(i);
-    return [tip.title, ...tip.rows.map((r) => [[r.label, r.value].filter(Boolean).join(": "), r.detail].filter(Boolean).join(", ")), tip.foot]
+    return [tip.title, ...tip.rows.map((r) => [[r.label, r.value].filter(Boolean).join(sep.label), r.detail].filter(Boolean).join(sep.clause)), tip.foot]
       .filter(Boolean)
-      .join(". ");
+      .join(sep.sentence);
   };
 
   const dayLegend = week ? (
@@ -335,7 +336,7 @@ function StatsBody({ today, range }: { today: ISODate; range: RangeKey }) {
   };
   const describeHeat = (p: { r: number; c: number }) => {
     const tip = heatTip(p);
-    return [tip.title, ...tip.rows.flatMap((r) => [r.value, r.detail]), tip.foot].filter(Boolean).join(". ");
+    return [tip.title, ...tip.rows.flatMap((r) => [r.value, r.detail]), tip.foot].filter(Boolean).join(sep.sentence);
   };
   let peakCell: { r: number; c: number; v: number } | null = null;
   let quietCell: { r: number; c: number; v: number } | null = null;

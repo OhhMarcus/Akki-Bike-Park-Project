@@ -5,7 +5,7 @@ import type { BikeSize, Experience, ISODate, LessonId, Rentals, SlotStatus } fro
 export const BOOKING_WINDOW_DAYS = 28;
 
 export const STEP_KEYS = ["class", "time", "rider", "waiver", "pay", "done"] as const;
-export type StepKey = (typeof STEP_KEYS)[number];
+type StepKey = (typeof STEP_KEYS)[number];
 export const STEP = { class: 0, time: 1, rider: 2, waiver: 3, pay: 4, done: 5 } as const satisfies Record<StepKey, number>;
 
 /** Basic age range accepted before the class minimum is checked. */

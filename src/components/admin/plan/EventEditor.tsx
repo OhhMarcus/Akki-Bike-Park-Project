@@ -170,21 +170,27 @@ export function EventEditor({
   };
 
   const footer = (
-    <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      {tried && hasErrors && (
+        <p role="alert" className="w-full text-xs font-medium text-state-closed">
+          {t("adminPlan.editor.errFix")}
+        </p>
+      )}
       {event ? (
-        <Button variant="ghost" font="sans" onClick={() => onDelete(event)} className="text-state-closed hover:bg-state-closed/10 hover:text-state-closed">
+        <Button
+          variant="ghost"
+          font="sans"
+          onClick={() => onDelete(event)}
+          aria-label={t("adminPlan.events.delete")}
+          className="px-3 text-state-closed hover:bg-state-closed/10 hover:text-state-closed sm:px-5"
+        >
           <Trash className="h-4 w-4" aria-hidden />
-          {t("btn.delete")}
+          <span className="hidden sm:inline">{t("btn.delete")}</span>
         </Button>
       ) : (
-        <span aria-hidden className="hidden sm:block" />
+        <span aria-hidden />
       )}
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        {tried && hasErrors && (
-          <p role="alert" className="w-full text-xs font-medium text-state-closed sm:w-auto">
-            {t("adminPlan.editor.errFix")}
-          </p>
-        )}
+      <div className="flex items-center gap-2">
         <Button variant="ghost" font="sans" onClick={onClose}>
           {t("btn.cancel")}
         </Button>
@@ -252,7 +258,7 @@ export function EventEditor({
                   ))}
                 </Select>
               </Field>
-              <Photo slot={d.photoSlot} alt={t(`adminPlan.photo.${d.photoSlot}`)} what={t(`adminPlan.photo.${d.photoSlot}`)} fade="none" sizes="480px" className="aspect-[16/9] w-full" />
+              <Photo slot={d.photoSlot} alt={t(`adminPlan.photo.${d.photoSlot}`)} what={t(`adminPlan.photo.${d.photoSlot}`)} fade="none" sizes="480px" className="h-36 w-full sm:h-40" />
             </div>
           </div>
         </section>

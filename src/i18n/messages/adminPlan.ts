@@ -313,7 +313,7 @@ export const adminPlanMessages = {
   "adminPlan.photo.events-nightjam": m("Night jam photo", "夜 Jam 相片"),
   "adminPlan.photo.events-groupride": m("Group ride photo", "團踩相片"),
   "adminPlan.photo.events-kidscamp": m("Kids camp photo", "小朋友營相片"),
-  "adminPlan.editor.content": m("Words", "內容"),
+  "adminPlan.editor.content": m("Content", "內容"),
   "adminPlan.editor.title": m("Title", "標題"),
   "adminPlan.editor.summary": m("Summary", "簡介"),
   "adminPlan.editor.summaryHint": m("One or two lines for the event card", "活動卡上的一兩句介紹"),

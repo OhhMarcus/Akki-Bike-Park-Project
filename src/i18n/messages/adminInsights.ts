@@ -6,6 +6,9 @@ const m = (en: string, zh: string): LocalizedText => ({ en, zh });
 export const adminInsightsMessages = {
   /* shared */
   "adminInsights.pct": m("{n}%", "{n}%"),
+  "adminInsights.sep.sentence": m(". ", "。"),
+  "adminInsights.sep.clause": m(", ", "，"),
+  "adminInsights.sep.label": m(": ", "："),
   "adminInsights.dash": m("—", "—"),
   "adminInsights.lessonShort.foundation": m("Foundation", "基礎班"),
   "adminInsights.lessonShort.advanced": m("Advanced", "進階班"),

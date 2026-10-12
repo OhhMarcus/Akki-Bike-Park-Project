@@ -83,7 +83,7 @@ export function LessonTimesPanel({ now }: { now: HKNow }) {
 
   const activeSwitch = (tpl: LessonTemplate) => (
     <Switch checked={tpl.active} onChange={(v) => toggle(tpl, v)} label={t("adminPlan.lessons.activeToggle", { name: nameOf(tpl), when: whenOf(tpl) })}>
-      <span className={tpl.active ? "text-fg" : "text-muted"}>{tpl.active ? t("adminPlan.lessons.active") : t("adminPlan.lessons.paused")}</span>
+      <span className={cn("whitespace-nowrap", tpl.active ? "text-fg" : "text-muted")}>{tpl.active ? t("adminPlan.lessons.active") : t("adminPlan.lessons.paused")}</span>
     </Switch>
   );
 
@@ -103,7 +103,7 @@ export function LessonTimesPanel({ now }: { now: HKNow }) {
         <EmptyState title={t("adminPlan.lessons.emptyTitle")} body={t("adminPlan.lessons.emptyBody")} />
       ) : (
         <>
-          <table className="hidden w-full border-collapse text-sm md:table">
+          <table className="hidden w-full border-collapse text-sm xl:table">
             <caption className="sr-only">{t("adminPlan.lessons.title")}</caption>
             <thead>
               <tr className="border-b border-line text-left text-xs text-muted">
@@ -135,7 +135,7 @@ export function LessonTimesPanel({ now }: { now: HKNow }) {
                     </td>
                     <td className="px-3 py-3 align-top">{t(`tlang.${tpl.language}`)}</td>
                     <td className="px-3 py-3 align-top">{coach ? l(coach.name) : "—"}</td>
-                    <td className="px-3 py-3 align-top tabular">{t("spots.max", { n: tpl.capacity })}</td>
+                    <td className="whitespace-nowrap px-3 py-3 align-top tabular">{t("spots.max", { n: tpl.capacity })}</td>
                     <td className="px-3 py-2 align-top">{activeSwitch(tpl)}</td>
                     <td className="py-2 pl-3 align-top">{actions(tpl)}</td>
                   </tr>
@@ -144,7 +144,7 @@ export function LessonTimesPanel({ now }: { now: HKNow }) {
             </tbody>
           </table>
 
-          <ul className="space-y-2 md:hidden">
+          <ul className="grid gap-2 md:grid-cols-2 xl:hidden">
             {templates.map((tpl) => {
               const coach = coachById(tpl.coachId);
               return (

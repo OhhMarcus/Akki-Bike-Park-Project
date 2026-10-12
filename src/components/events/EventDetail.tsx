@@ -12,6 +12,7 @@ import { useAvailability, useEvents, useNowHK, usePublishedEvents } from "@/lib/
 import { useHydrated } from "@/lib/store";
 import { fromMin, hkInstant, toMin } from "@/lib/time";
 import { SectionTitle } from "@/components/brand/Headline";
+import { PatternDivider } from "@/components/brand/Pattern";
 import { Photo } from "@/components/brand/Photo";
 import { Swap } from "@/components/brand/Swap";
 import { Countdown } from "@/components/common/Countdown";
@@ -307,23 +308,26 @@ export function EventDetail({ slug }: { slug: string }) {
       )}
 
       {more.length > 0 && (
-        <section className="container pt-14 lg:pt-20">
-          <SectionTitle
-            title={t("events.more.title")}
-            action={
-              <Link href="/events" className={cn(buttonVariants({ variant: "secondary" }), "self-start sm:self-auto")}>
-                {t("events.seeAll")}
-              </Link>
-            }
-          />
-          <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {more.map((x) => (
-              <li key={x.event.id}>
-                <EventCard event={x.event} spots={x.spots} />
-              </li>
-            ))}
-          </ul>
-        </section>
+        <>
+          <PatternDivider className="mt-14 lg:mt-20" />
+          <section className="container pt-12 lg:pt-16">
+            <SectionTitle
+              title={t("events.more.title")}
+              action={
+                <Link href="/events" className={cn(buttonVariants({ variant: "secondary" }), "self-start sm:self-auto")}>
+                  {t("events.seeAll")}
+                </Link>
+              }
+            />
+            <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {more.map((x) => (
+                <li key={x.event.id}>
+                  <EventCard event={x.event} spots={x.spots} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
       )}
 
       <RegisterSheet

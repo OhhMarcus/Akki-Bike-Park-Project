@@ -103,7 +103,7 @@ export function ColumnChart({
       tabIndex={0}
       role="group"
       aria-roledescription={t("adminInsights.chart.roledesc")}
-      aria-label={`${label}. ${t("adminInsights.chart.keys")}`}
+      aria-label={`${label}${t("adminInsights.sep.sentence")}${t("adminInsights.chart.keys")}`}
       onKeyDown={onKey}
       onFocus={(e) => {
         if (active === null && e.currentTarget.matches(":focus-visible")) move(defaultIndex ?? n - 1);

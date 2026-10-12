@@ -103,7 +103,7 @@ export function EventsPage() {
         eyebrow={t("nav.events")}
         title={t("events.hero.title")}
         lead={t("events.hero.lead")}
-        aside={!data ? <Skeleton className="h-[388px] w-full" /> : data.race ? <NextRaceCard event={data.race.event} spots={data.race.spots} /> : undefined}
+        aside={!data ? <Skeleton className="h-[380px] w-full lg:h-[420px]" /> : data.race ? <NextRaceCard event={data.race.event} spots={data.race.spots} /> : undefined}
       />
 
       <section aria-label={t("events.list.label")} className="container space-y-8 py-10 lg:py-14">
@@ -114,7 +114,7 @@ export function EventsPage() {
 
         {!data || !view ? (
           <>
-            <Skeleton className="hidden h-[760px] lg:block" />
+            <Skeleton className="hidden h-[750px] lg:block" />
             <div className="space-y-3 lg:hidden">
               <Skeleton className="h-9 w-56" />
               <Skeleton className="h-64" />

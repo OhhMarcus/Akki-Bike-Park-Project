@@ -221,7 +221,7 @@ export function BookingsScreen({ initial }: { initial: BookingsQuery }) {
         return r ? (
           <span className="block min-w-[120px] text-xs text-muted">{r}</span>
         ) : (
-          <span className="text-muted/60">
+          <span className="relative text-muted/60">
             –<span className="sr-only">{t("adminOps.none")}</span>
           </span>
         );
@@ -247,7 +247,7 @@ export function BookingsScreen({ initial }: { initial: BookingsQuery }) {
       className: "whitespace-nowrap",
       cell: (b) =>
         b.status === "cancelled" ? (
-          <span className="text-muted/60">
+          <span className="relative text-muted/60">
             –<span className="sr-only">{t("booking.cancelled")}</span>
           </span>
         ) : (
