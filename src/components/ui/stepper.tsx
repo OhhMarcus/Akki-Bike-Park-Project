@@ -4,7 +4,7 @@ import { Minus, Plus } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
 
-/** − value + control. Announces the value for screen readers. */
+/** − value + control. Announces the value for screen readers. Uses aria-disabled so focus never drops out at min/max. */
 export function NumberStepper({
   value, onChange, min = 0, max = 99, label, id, className, size = "md",
 }: {
@@ -16,9 +16,9 @@ export function NumberStepper({
     <div className={cn("inline-flex items-center rounded-lg border border-line bg-[#0E0D0D]", className)} role="group" aria-label={label}>
       <button
         type="button"
-        className={cn(btn, "grid place-items-center rounded-l-lg text-fg hover:bg-white/5 disabled:opacity-30")}
-        onClick={() => onChange(Math.max(min, value - 1))}
-        disabled={value <= min}
+        className={cn(btn, "grid place-items-center rounded-l-lg text-fg hover:bg-white/5 aria-disabled:cursor-not-allowed aria-disabled:opacity-30 aria-disabled:hover:bg-transparent")}
+        onClick={() => value > min && onChange(Math.max(min, value - 1))}
+        aria-disabled={value <= min}
         aria-label={`${t("btn.decrease")}: ${label}`}
       >
         <Minus className="h-4 w-4" />
@@ -28,9 +28,9 @@ export function NumberStepper({
       </output>
       <button
         type="button"
-        className={cn(btn, "grid place-items-center rounded-r-lg text-fg hover:bg-white/5 disabled:opacity-30")}
-        onClick={() => onChange(Math.min(max, value + 1))}
-        disabled={value >= max}
+        className={cn(btn, "grid place-items-center rounded-r-lg text-fg hover:bg-white/5 aria-disabled:cursor-not-allowed aria-disabled:opacity-30 aria-disabled:hover:bg-transparent")}
+        onClick={() => value < max && onChange(Math.min(max, value + 1))}
+        aria-disabled={value >= max}
         aria-label={`${t("btn.increase")}: ${label}`}
       >
         <Plus className="h-4 w-4" />
