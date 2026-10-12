@@ -233,6 +233,7 @@ export const commonMessages = {
   "fmt.time.evening": m("{h}:{mm}pm", "晚上{h}:{mm}"),
   "fmt.time.bare": m("{h}:{mm}", "{h}:{mm}"),
   "fmt.timeRange": m("{a}–{b}", "{a}–{b}"),
+  "fmt.dateTime": m("{date}, {time}", "{date} {time}"),
   "fmt.today": m("Today", "今日"),
   "fmt.tomorrow": m("Tomorrow", "明日"),
   "fmt.money": m("HK${n}", "HK${n}"),

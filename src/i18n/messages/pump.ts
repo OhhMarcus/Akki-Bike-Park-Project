@@ -59,6 +59,7 @@ export const pumpMessages = {
   "pump.week.caption": m("Pump Track sessions, {range}", "Pump Track 時段：{range}"),
   "pump.week.outside": m("Not open for booking", "未開放預約"),
   "pump.week.opens": m("Opens {time}", "{time}開放"),
+  "pump.week.empty": m("No sessions this week. Try the other week.", "呢個星期冇時段，睇下另一個星期啦。"),
 
   /* groups */
   "pump.group.lead": m("Group of 7 or more?", "7 人或以上？"),
@@ -69,7 +70,6 @@ export const pumpMessages = {
   ),
 
   /* booking sheet */
-  "pump.sheet.title": m("{date} · {time}", "{date} · {time}"),
   "pump.sheet.desc": m("Pump Track session · {left}", "Pump Track 時段 · {left}"),
   "pump.step": m("Step {n} of 2 · {label}", "第 {n} 步（共 2 步）· {label}"),
   "pump.step.details": m("Riders & details", "人數及資料"),
@@ -78,7 +78,7 @@ export const pumpMessages = {
   "pump.rent.add": m("Rent gear", "租裝備"),
   "pump.rent.hide": m("Hide", "收起"),
   "pump.details": m("Your details", "聯絡資料"),
-  "pump.clearDetails": m("Not you? Clear", "唔係你？清除"),
+  "pump.clearDetails": m("Not you? Clear", "不是你？清除"),
   "pump.edit": m("Edit", "修改"),
   "pump.fail.pick": m("Pick another time", "揀第二個時間"),
   "pump.fail.alt": m("Next session with room", "下一節有位"),

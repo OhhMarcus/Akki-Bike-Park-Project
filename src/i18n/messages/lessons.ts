@@ -47,7 +47,6 @@ export const lessonsMessages = {
   "lessons.card.none": m("No open classes in the next 4 weeks.", "未來四星期暫時未有空位。"),
   "lessons.card.noneCta": m("WhatsApp us for a time", "WhatsApp 我哋約時間"),
   "lessons.card.book": m("Book {lesson}", "預約{lesson}"),
-  "lessons.card.bookDate": m("Book {lesson}, {date}", "預約{date}{lesson}"),
 
   /* 5-class pack */
   "lessons.pack.eyebrow": m("Ride more, pay less", "踩得多，慳得多"),
@@ -76,7 +75,6 @@ export const lessonsMessages = {
     "小班教學，教練會專心睇你踩，再話你知邊度要改善。",
   ),
   "lessons.coaches.photoAlt": m("Portrait of {name}", "{name}嘅照片"),
-  "lessons.coaches.photoWhat": m("coach portrait", "教練照片"),
   "lessons.coaches.teaches": m("Teaches in {langs}", "授課語言：{langs}"),
 
   /* FAQ */
@@ -179,7 +177,6 @@ export const lessonsMessages = {
   "lessons.rider.switch": m("Switch to Foundation", "改為基礎班"),
   "lessons.rider.pickOne": m("Pick one", "請選擇一項"),
   "lessons.rent.suggestedOpt": m("{size} (suggested)", "{size}（建議）"),
-  "lessons.rent.sizeFor": m("Bike size · {price}", "單車尺寸 · {price}"),
   "lessons.pack.use": m("Use 1 of your pack classes ({n} left)", "使用 1 堂套票（尚餘 {n} 堂）"),
   "lessons.pack.useDetail": m("We found a {lesson} pack on this number, valid until {date}.", "此電話號碼有{lesson}套票，有效期至{date}。"),
   "lessons.pack.buying": m(
@@ -192,7 +189,6 @@ export const lessonsMessages = {
   "lessons.waiver.minor": m("{name} is under 18, so a parent or guardian needs to tick and sign.", "{name}未滿 18 歲，須由家長或監護人剔選及簽名。"),
 
   /* step 5: pay */
-  "lessons.pay.review": m("Your class", "課堂資料"),
   "lessons.pay.editClass": m("Change class or time", "更改課程或時間"),
   "lessons.pay.editRider": m("Edit rider details", "修改騎手資料"),
   "lessons.pay.errorTitle": m("We couldn't book that", "未能完成預約"),

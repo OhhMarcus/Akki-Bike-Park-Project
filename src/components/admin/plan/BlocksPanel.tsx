@@ -140,7 +140,6 @@ export function BlocksPanel({ now }: { now: HKNow }) {
   );
 }
 
-
 function AddBlockForm({ now }: { now: HKNow }) {
   const { t, tn } = useI18n();
   const toast = useToast();
@@ -231,7 +230,7 @@ function AddBlockForm({ now }: { now: HKNow }) {
       <DateField id="block-date" label={t("label.date")} value={date} onChange={pickDate} min={now.date} max={addDays(now.date, 365)} today={now.date} />
 
       <div className="space-y-2">
-        <p className="text-sm font-medium" id="block-length">{t("adminPlan.blocks.length")}</p>
+        <p className="text-sm font-medium">{t("adminPlan.blocks.length")}</p>
         <Segmented
           label={t("adminPlan.blocks.length")}
           value={mode}

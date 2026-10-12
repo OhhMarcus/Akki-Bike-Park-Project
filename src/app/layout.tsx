@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale();
   return (
-    <html lang={locale === "zh" ? "zh-Hant-HK" : "en-HK"} className={`${display.variable} ${sans.variable} ${cjk.variable}`}>
+    <html lang={locale === "zh" ? "zh-Hant-HK" : "en-HK"} data-scroll-behavior="smooth" className={`${display.variable} ${sans.variable} ${cjk.variable}`}>
       <body>
         <Providers locale={locale}>{children}</Providers>
       </body>

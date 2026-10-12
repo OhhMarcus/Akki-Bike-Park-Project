@@ -179,7 +179,7 @@ function TodayBoard({ now }: { now: HKNow }) {
                   {" · "}
                   <Link
                     href="/admin/bookings?range=today&status=unpaid"
-                    aria-label={`${t("adminOps.kpi.unpaidView")}: ${t("adminOps.kpi.unpaid")}`}
+                    aria-label={t("adminOps.kpi.unpaidViewLabel")}
                     className="font-semibold text-fg underline decoration-fg/30 underline-offset-2 hover:decoration-fg"
                   >
                     {t("adminOps.kpi.unpaidView")}
@@ -440,11 +440,16 @@ function SessionList({ units, now, className }: { units: Unit[]; now: HKNow; cla
 function ClosedRow({ unit }: { unit: Unit }) {
   const { t, fmt } = useI18n();
   return (
-    <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-dashed border-line px-3 py-3 text-sm sm:px-4">
-      <span className="font-semibold tabular text-muted sm:w-[84px]">{fmt.timeRange(unit.start, unit.end)}</span>
-      <span aria-hidden className="hatch-closed h-3 w-3 rounded-sm border border-state-closed" />
-      <span className="font-semibold text-state-closed">{t("adminOps.sessions.closedRun")}</span>
-      {unit.closedReason && <span className="text-muted">{t(`reason.${unit.closedReason}`)}</span>}
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-dashed border-line p-3 text-sm sm:grid sm:grid-cols-[84px_minmax(0,1fr)] sm:gap-x-4 sm:p-4">
+      <span className="flex items-baseline gap-1.5 text-muted sm:block">
+        <span className="font-semibold tabular">{fmt.time(unit.start)}</span>
+        <span className="text-xs tabular sm:block">– {fmt.time(unit.end)}</span>
+      </span>
+      <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+        <span aria-hidden className="hatch-closed h-3 w-3 rounded-sm border border-state-closed" />
+        <span className="font-semibold text-state-closed">{t("adminOps.sessions.closedRun")}</span>
+        {unit.closedReason && <span className="text-muted">{t(`reason.${unit.closedReason}`)}</span>}
+      </span>
     </li>
   );
 }
@@ -482,9 +487,12 @@ function SessionRow({ unit, now, open, onToggle }: { unit: Unit; now: HKNow; ope
             {ph === "live" && unit.status !== "closed" && <LiveBadge />}
           </span>
           <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
+            {unit.status === "closed" && unit.closedReason && (
+              <span className="font-semibold text-state-closed">{t(`reason.${unit.closedReason}`)}</span>
+            )}
             {coach && (
               <span>
-                {t("label.coach")}: {l(coach.name)}
+                {t("adminOps.coach", { name: l(coach.name) })}
                 <Swap />
               </span>
             )}

@@ -149,11 +149,7 @@ function SheetBody({ target, now, onClose, onSwitch }: { target: SheetTarget; no
     setPhone("");
   };
 
-  const title = slot
-    ? t("pump.sheet.title", { date: fmt.dateWeekday(slot.date), time: fmt.timeRange(slot.start, slot.end) })
-    : ref
-      ? t("pump.sheet.title", { date: fmt.dateWeekday(ref.date), time: fmt.time(ref.start) })
-      : t("book.line.pump");
+  const title = slot ? <When date={slot.date} start={slot.start} end={slot.end} /> : ref ? <When date={ref.date} start={ref.start} /> : t("book.line.pump");
   const description = slot && !done && !problem ? t("pump.sheet.desc", { left: t("spots.ofLeft", { n: remaining, cap: slot.capacity }) }) : t("book.line.pump");
 
   const bikes = rentalBikeCount(rentalsNow);
@@ -196,7 +192,9 @@ function SheetBody({ target, now, onClose, onSwitch }: { target: SheetTarget; no
           <div className="surface space-y-3 p-4">
             <p className="text-xs font-semibold text-muted">{t("pump.fail.alt")}</p>
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <p className="h-display text-2xl">{t("pump.sheet.title", { date: fmt.dateWeekday(alt.date), time: fmt.timeRange(alt.start, alt.end) })}</p>
+              <p className="h-display text-2xl">
+                <When date={alt.date} start={alt.start} end={alt.end} />
+              </p>
               <span className="flex items-center gap-2 text-xs text-muted tabular">
                 <StatusBadge status={alt.status} />· {t("spots.ofLeft", { n: alt.remaining, cap: alt.capacity })}
               </span>
@@ -359,6 +357,16 @@ function SheetBody({ target, now, onClose, onSwitch }: { target: SheetTarget; no
     >
       {body}
     </Sheet>
+  );
+}
+
+/** "Mon 12 Oct · 4:00–5:00pm" with each half kept whole, so a narrow sheet wraps between them. */
+function When({ date, start, end }: { date: ISODate; start: string; end?: string }) {
+  const { fmt } = useI18n();
+  return (
+    <>
+      <span className="whitespace-nowrap">{fmt.dateWeekday(date)}</span> · <span className="whitespace-nowrap">{end ? fmt.timeRange(start, end) : fmt.time(start)}</span>
+    </>
   );
 }
 

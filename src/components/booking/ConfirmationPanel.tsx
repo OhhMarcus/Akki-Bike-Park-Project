@@ -27,7 +27,7 @@ export function ConfirmationPanel({
   className?: string;
 }) {
   const { t, tn, l, fmt } = useI18n();
-  const when = `${fmt.dateWeekday(booking.date)}, ${fmt.timeRange(booking.start, booking.end)}`;
+  const when = t("fmt.dateTime", { date: fmt.dateWeekday(booking.date), time: fmt.timeRange(booking.start, booking.end) });
   const where = `${site.name.en} · ${l(site.location.area)}`;
   const calTitle = `${title} · ${site.name.en}`;
   const details = t("book.calDetails", { ref: booking.ref });

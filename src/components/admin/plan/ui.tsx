@@ -8,6 +8,7 @@ import { createFormatters } from "@/i18n/format";
 import { interpolate } from "@/i18n/shared";
 import { MonthGrid, MonthNav } from "@/components/calendar/MonthCalendar";
 import { Select } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useEvents } from "@/lib/hooks";
 import { bookingTitle } from "@/lib/labels";
 import { addDays, fromMin, hkNow, parts, toMin } from "@/lib/time";
@@ -31,7 +32,7 @@ export function tally(bookings: Booking[]) {
   };
 }
 
-/** "Mon 12 Oct, 5:00–8:00pm" / "Today, all day". `rel` uses Today/Tomorrow. */
+/** "Mon 12 Oct, 5:00–8:00pm" / "Mon 12 Oct, all day". Pass `today` to get "Today" / "Tomorrow" instead of the date. */
 export function useWhen() {
   const { t, fmt } = useI18n();
   return (o: { date: ISODate; start?: HHmm; end?: HHmm }, today?: ISODate) => {
@@ -56,10 +57,23 @@ export function halfHours(from = 6 * 60, to = 23 * 60 + 30): HHmm[] {
   return out;
 }
 
+/** Starts after `now` (later today or on a later day). */
 export const upcomingFrom = (b: Pick<Booking, "date" | "start">, now: { date: ISODate; minutes: number }) =>
   b.date > now.date || (b.date === now.date && toMin(b.start) > now.minutes);
 
 /* ---------- layout ---------- */
+
+/** Loading state shared by the planning screens (shown until the HK clock and stored data are ready). */
+export function PlanSkeleton() {
+  const { t } = useI18n();
+  return (
+    <div className="space-y-6" aria-busy="true">
+      <p className="sr-only" role="status">{t("state.loading")}</p>
+      <Skeleton className="h-80 w-full" />
+      <Skeleton className="h-56 w-full" />
+    </div>
+  );
+}
 
 /** Section card used on the planning screens. */
 export function Panel({

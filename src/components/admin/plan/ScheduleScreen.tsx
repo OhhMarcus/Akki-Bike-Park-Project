@@ -2,12 +2,12 @@
 
 import { useI18n } from "@/i18n/provider";
 import { AdminPageHeader } from "@/components/layout/AdminShell";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useNowHK } from "@/lib/hooks";
 import type { MessageKey } from "@/i18n/dictionary";
 import { BlocksPanel } from "./BlocksPanel";
 import { LessonTimesPanel } from "./LessonTimesPanel";
 import { PumpHoursPanel } from "./PumpHoursPanel";
+import { PlanSkeleton } from "./ui";
 
 const SECTIONS: { id: string; key: MessageKey }[] = [
   { id: "hours", key: "adminPlan.hours.title" },
@@ -39,15 +39,5 @@ export function ScheduleScreen() {
         <PlanSkeleton />
       )}
     </>
-  );
-}
-
-/** Loading state shared by the planning screens. */
-export function PlanSkeleton() {
-  return (
-    <div className="space-y-6" aria-busy="true">
-      <Skeleton className="h-80 w-full" />
-      <Skeleton className="h-56 w-full" />
-    </div>
   );
 }

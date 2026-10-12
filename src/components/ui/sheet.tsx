@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
@@ -22,11 +23,23 @@ export function Sheet({
   wide?: boolean;
 }) {
   const { t } = useI18n();
+  // Controlled sheets have no Radix trigger, so remember what had focus and give it back on close.
+  const opener = useRef<HTMLElement | null>(null);
+  useLayoutEffect(() => {
+    if (open && document.activeElement instanceof HTMLElement && document.activeElement !== document.body) opener.current = document.activeElement;
+  }, [open]);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-[2px] data-[state=open]:animate-fade-up" />
         <Dialog.Content
+          onCloseAutoFocus={(e) => {
+            const el = opener.current;
+            if (el && document.contains(el)) {
+              e.preventDefault();
+              el.focus();
+            }
+          }}
           className={cn(
             "fixed inset-x-0 bottom-0 z-[90] flex max-h-[92svh] flex-col rounded-t-xl border border-line bg-card shadow-lift outline-none data-[state=open]:animate-sheet-in",
             "sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl",

@@ -15,7 +15,6 @@ export const adminPlanMessages = {
   "adminPlan.withRiders": m("{bookings} ({riders})", "{bookings}（{riders}）"),
   "adminPlan.showAll": m("Show all {n}", "顯示全部 {n} 個"),
   "adminPlan.showLess": m("Show fewer", "顯示較少"),
-  "adminPlan.more": m("+{n} more", "另有 {n} 個"),
   "adminPlan.moreSessions": m("+{n} more sessions", "另有 {n} 個時段"),
   "adminPlan.newTab": m("(opens in a new tab)", "（在新分頁開啟）"),
   "adminPlan.listSep": m(", ", "、"),
@@ -23,7 +22,6 @@ export const adminPlanMessages = {
   "adminPlan.fieldEn": m("English {field}", "英文{field}"),
   "adminPlan.fieldZh": m("Chinese {field}", "中文{field}"),
   "adminPlan.date.change": m("Change date", "更改日期"),
-  "adminPlan.date.today": m("Today", "今日"),
 
   /* schedule page */
   "adminPlan.schedule.lead": m(
@@ -63,7 +61,7 @@ export const adminPlanMessages = {
   "adminPlan.hours.impactTitle": m("Some bookings don't fit the new hours", "部分預約不在新時間內"),
   "adminPlan.hours.impactBody": m(
     "{count} fall outside the new hours or session times. They stay booked, so move them or message the riders.",
-    "有 {count} 不在新的開放時間或時段內。預約會保留，請改期或通知車手。",
+    "有 {count}不在新的開放時間或時段內。預約會保留，請改期或通知車手。",
   ),
   "adminPlan.hours.over.one": m("{n} upcoming session already has more riders than the new limit.", "有 {n} 個時段的已預約人數超過新上限。"),
   "adminPlan.hours.over.other": m("{n} upcoming sessions already have more riders than the new limit.", "有 {n} 個時段的已預約人數超過新上限。"),
@@ -130,7 +128,6 @@ export const adminPlanMessages = {
   "adminPlan.blocks.upcoming": m("Coming up", "即將生效"),
   "adminPlan.blocks.emptyTitle": m("No blocks coming up", "暫時沒有暫停安排"),
   "adminPlan.blocks.emptyBody": m("Everything runs to the weekly schedule.", "一切按每週時間表進行。"),
-  "adminPlan.blocks.allDay": m("All day", "全日"),
   "adminPlan.blocks.scope.all": m("Whole park", "全園"),
   "adminPlan.blocks.scope.pump": m("Pump Track", "Pump Track"),
   "adminPlan.blocks.scope.lessons": m("Lessons", "課程"),
@@ -165,7 +162,7 @@ export const adminPlanMessages = {
   "adminPlan.blocks.noClash": m("No bookings in this window.", "此時段沒有預約。"),
   "adminPlan.blocks.submit": m("Add block", "新增暫停"),
   "adminPlan.blocks.confirmTitle": m("Add this block?", "確認新增暫停？"),
-  "adminPlan.blocks.confirmBody": m("{scope} closes {when}. Reason: {reason}.", "{scope}將於{when}暫停。原因：{reason}。"),
+  "adminPlan.blocks.confirmBody": m("{scope} closes {when}. Reason: {reason}.", "暫停範圍：{scope}。時間：{when}。原因：{reason}。"),
   "adminPlan.blocks.confirmClash": m("{clash}. They stay booked, so move them or message the riders.", "{clash}。預約會保留，請改期或通知車手。"),
   "adminPlan.blocks.added": m("Block added. Those times show Closed on the site.", "已新增暫停，網站相關時段會顯示暫停。"),
   "adminPlan.count.pump.one": m("{n} pump track session", "{n} 節 Pump Track"),
@@ -348,7 +345,6 @@ export const adminPlanMessages = {
   "adminPlan.editor.savedLive": m("Event saved. It's live on the site.", "已儲存活動，網站已更新。"),
   "adminPlan.editor.savedDraft": m("Saved as a draft. It's not on the site yet.", "已儲存為草稿，暫未在網站顯示。"),
   "adminPlan.editor.errTitle": m("Add a title in at least one language", "請最少填寫一種語言的標題"),
-  "adminPlan.editor.errSlug": m("Use lowercase letters, numbers and dashes", "只可使用小楷英文字母、數字及連字號"),
   "adminPlan.editor.errSlugTaken": m("Another event already uses this link", "已有其他活動使用此連結"),
   "adminPlan.editor.errCat": m("Give every category a name", "請為每個組別命名"),
   "adminPlan.editor.errPublish": m("Fill in both languages, or switch off Publish to save a draft.", "請填齊中英文內容，或關閉發佈以儲存草稿。"),

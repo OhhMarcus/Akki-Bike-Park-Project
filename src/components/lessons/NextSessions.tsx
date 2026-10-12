@@ -96,7 +96,7 @@ export function NextSessions({ lessonId, lessonName }: { lessonId: LessonId; les
                     href={`/lessons/book?lesson=${lessonId}&date=${s.date}`}
                     className="group -mx-2 flex min-h-[58px] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-white/[0.04]"
                   >
-                    <span className="sr-only">{t("lessons.card.bookDate", { lesson: lessonName, date: fmt.dateWeekday(s.date) })}: </span>
+                    <span className="sr-only">{t("lessons.card.book", { lesson: lessonName })} </span>
                     {body}
                     <ChevronRight aria-hidden className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-fg" />
                   </Link>

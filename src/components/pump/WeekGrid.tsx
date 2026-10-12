@@ -123,7 +123,7 @@ export function WeekGrid({
       </div>
 
       {!rows.length ? (
-        <EmptyState className="mt-6" title={t("pump.empty.full.title")} body={t("pump.empty.full.body")} />
+        <EmptyState className="mt-6" title={t("pump.empty.rest.title")} body={t("pump.week.empty")} />
       ) : (
         <table className="mt-6 w-full table-fixed border-separate border-spacing-1.5">
           <caption className="sr-only">{t("pump.week.caption", { range })}</caption>

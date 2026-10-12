@@ -22,7 +22,7 @@ import { BookingMiniList, Panel, WarningGlyph, tally, useStamp, useWhen } from "
 const ALL_WARNINGS: WarningCode[] = ["amber_rain", "red_rain", "black_rain", "thunderstorm", "t3", "t8", "very_hot"];
 
 /** What a rider sees in WhatsApp: one message from AKKI with both languages. */
-export function WhatsAppPreview({ en, zh, sentAt, today, className }: { en: string; zh: string; sentAt?: string; today: string; className?: string }) {
+function WhatsAppPreview({ en, zh, sentAt, today, className }: { en: string; zh: string; sentAt?: string; today: string; className?: string }) {
   const { t, l, fmt } = useI18n();
   const at = hkNow(sentAt ? Date.parse(sentAt) : Date.now());
   return (

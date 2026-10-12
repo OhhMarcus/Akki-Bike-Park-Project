@@ -117,7 +117,7 @@ export function AddBookingScreen() {
         title: `${l(lessons[s.lessonId].name)} · ${t(`tlang.${s.language}`)}`,
         detail: coach ? (
           <span className="mt-0.5 block text-xs text-muted">
-            {t("label.coach")}: {l(coach.name)}
+            {t("adminOps.coach", { name: l(coach.name) })}
             <Swap />
           </span>
         ) : undefined,

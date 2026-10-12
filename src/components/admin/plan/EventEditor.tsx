@@ -38,7 +38,7 @@ const LANGS: Locale[] = ["en", "zh"];
 type MissingField = "title" | "summary" | "body" | "catName" | "catAges";
 
 /** Every field that is filled in one language but not the other (or in neither). */
-export function missingFields(e: Pick<ParkEvent, "title" | "summary" | "body" | "categories">) {
+function missingFields(e: Pick<ParkEvent, "title" | "summary" | "body" | "categories">) {
   const out: { lang: Locale; field: MissingField }[] = [];
   for (const lang of LANGS) {
     for (const field of ["title", "summary", "body"] as const) if (!e[field][lang].trim()) out.push({ lang, field });
@@ -58,7 +58,7 @@ export function missingLangs(e: Pick<ParkEvent, "title" | "summary" | "body" | "
 const cleanSlug = (s: string) => slugify(s).replace(/^-+|-+$/g, "") || "event";
 
 /** A slug no other event uses: race-day, race-day-2, … */
-export function uniqueSlug(base: string, events: ParkEvent[], selfId?: string) {
+function uniqueSlug(base: string, events: ParkEvent[], selfId?: string) {
   const taken = new Set(events.filter((e) => e.id !== selfId).map((e) => e.slug));
   let slug = base;
   for (let i = 2; taken.has(slug); i++) slug = `${base}-${i}`;

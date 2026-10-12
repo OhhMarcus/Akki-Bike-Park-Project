@@ -158,29 +158,30 @@ function ClosedDay({ reason, event, action }: { reason: BlockReason; event?: Par
   );
 }
 
+/** A run of closed sessions: red hatch, the reason, and the event behind it when there is one. */
+function ClosedCard({ slots, reason, events }: { slots: SlotView[]; reason: BlockReason; events: ParkEvent[] }) {
+  const { t, fmt } = useI18n();
+  const event = reason === "event" ? eventForSlot(slots[0], events) : undefined;
+  return (
+    <li className="relative overflow-hidden rounded-lg border border-state-closed/40 bg-card">
+      <span aria-hidden className="hatch-closed absolute inset-0 opacity-50" />
+      <div className="relative p-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="h-display text-[26px] text-fg/60">{fmt.timeRange(slots[0].start, slots[slots.length - 1].end)}</p>
+          <StatusBadge status="closed" />
+        </div>
+        <p className="mt-1.5 text-sm font-semibold text-fg/90">{t(`reason.${reason}`)}</p>
+        {event && <EventLink event={event} className="mt-3" />}
+      </div>
+    </li>
+  );
+}
+
 /** One session. Bookable cards are a single big tap target (overlay button keeps the markup valid). */
-function SlotCard({ slot, events, onOpen }: { slot: SlotView; events: ParkEvent[]; onOpen: (s: SlotView, opener: HTMLElement) => void }) {
+function SlotCard({ slot, onOpen }: { slot: SlotView; onOpen: (s: SlotView, opener: HTMLElement) => void }) {
   const { t, fmt } = useI18n();
   const time = fmt.timeRange(slot.start, slot.end);
   const left = t("spots.ofLeft", { n: slot.remaining, cap: slot.capacity });
-
-  if (slot.status === "closed") {
-    const reason = slot.closedReason ?? "other";
-    const event = reason === "event" ? eventForSlot(slot, events) : undefined;
-    return (
-      <li className="relative overflow-hidden rounded-lg border border-state-closed/40 bg-card">
-        <span aria-hidden className="hatch-closed absolute inset-0 opacity-50" />
-        <div className="relative p-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="h-display text-[26px] text-fg/60">{time}</p>
-            <StatusBadge status="closed" />
-          </div>
-          <p className="mt-1.5 text-sm font-semibold text-fg/90">{t(`reason.${reason}`)}</p>
-          {event && <EventLink event={event} className="mt-3" />}
-        </div>
-      </li>
-    );
-  }
 
   if (!isBookable(slot)) {
     return (

@@ -36,8 +36,8 @@ export function LivePill({ className }: { className?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-1.5 text-xs font-semibold text-muted", className)}>
       <span aria-hidden className="h-1.5 w-1.5 animate-pulse2 rounded-full bg-brand-sky" />
-      {t("pump.live")}
-      <span className="sr-only">: {t("pump.liveHint")}</span>
+      <span aria-hidden>{t("pump.live")}</span>
+      <span className="sr-only">{t("pump.liveHint")}</span>
     </span>
   );
 }

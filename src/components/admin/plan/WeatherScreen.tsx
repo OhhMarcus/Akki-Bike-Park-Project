@@ -18,8 +18,7 @@ import { dateRange, fromMin, toMin, type HKNow } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import type { Block, HHmm, ISODate, Locale, ScheduleSettings, WarningCode } from "@/types";
 import { ClosureCard, ClosureHistory, WarningControl } from "./ClosurePanels";
-import { PlanSkeleton } from "./ScheduleScreen";
-import { BookingMiniList, ErrorText, Panel, TimeSelect, Warn, WarningGlyph, formattersFor, halfHours, tally, useWhen } from "./ui";
+import { BookingMiniList, ErrorText, Panel, PlanSkeleton, TimeSelect, Warn, WarningGlyph, formattersFor, halfHours, tally, useWhen } from "./ui";
 
 /** Warnings that close the park, most common first. */
 const CLOSURE_WARNINGS: WarningCode[] = ["black_rain", "t8", "red_rain", "thunderstorm", "t3"];

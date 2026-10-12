@@ -17,8 +17,7 @@ import { deleteEvent, setEventPublished } from "@/lib/services";
 import type { HKNow } from "@/lib/time";
 import type { ParkEvent } from "@/types";
 import { EventEditor, missingLangs } from "./EventEditor";
-import { PlanSkeleton } from "./ScheduleScreen";
-import { DateTile, Switch, Warn } from "./ui";
+import { DateTile, PlanSkeleton, Switch, Warn } from "./ui";
 
 /** Admin → Events. */
 export function EventsScreen() {
