@@ -298,14 +298,16 @@ export function updateSettings(next: ScheduleSettings | ((s: ScheduleSettings) =
   setState("settings", (s) => ({ ...(typeof next === "function" ? next(s) : next), updatedAt: new Date().toISOString() }));
 }
 
-/** Confirmed bookings that overlap a period (for closure previews and block warnings). */
+/** Confirmed bookings that overlap a period and haven't finished yet (closure previews, block warnings). */
 export function bookingsAffectedBy(date: ISODate, start?: HHmm, end?: HHmm, scope: Block["scope"] = "all") {
   const s = start ? toMin(start) : 0;
   const e = end ? toMin(end) : 24 * 60;
+  const now = hkNow();
   return getState("bookings").filter(
     (b) =>
       b.status === "confirmed" &&
       b.date === date &&
+      !(b.date < now.date || (b.date === now.date && toMin(b.end) <= now.minutes)) &&
       (scope === "all" || (scope === "pump" ? b.kind === "pump" : b.kind === "lesson")) &&
       overlaps(s, e, toMin(b.start), toMin(b.end)),
   );

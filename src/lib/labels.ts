@@ -11,7 +11,7 @@ export function bookingTitle(b: Pick<Booking, "kind" | "targetId">, events: Park
   }
   if (b.kind === "event") {
     const e = events.find((x) => x.id === b.targetId);
-    if (e) return e.title;
+    return e ? e.title : dictionary["kind.event"];
   }
   return dictionary["book.line.pump"];
 }
