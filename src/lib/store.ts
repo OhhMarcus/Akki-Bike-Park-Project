@@ -134,6 +134,8 @@ export function useStore<K extends StoreKey>(key: K) {
 /* ---------- daily refresh & reset ---------- */
 
 const DATA_KEYS: StoreKey[] = ["bookings", "riders", "events", "blocks"];
+/** Bump when the sample data generator changes so stored sample records are rebuilt. */
+const SEED_VERSION = 2;
 
 /**
  * Sample data is relative to today. When the date changes, rebuild the sample
@@ -142,14 +144,14 @@ const DATA_KEYS: StoreKey[] = ["bookings", "riders", "events", "blocks"];
  */
 export function refreshSampleData() {
   if (typeof window === "undefined") return;
-  const today = hkToday();
+  const marker = `${hkToday()}#${SEED_VERSION}`;
   let stored: string | null = null;
   try {
     stored = window.localStorage.getItem(PREFIX + "seedDate");
   } catch {
     return;
   }
-  if (stored === today) return;
+  if (stored === marker) return;
   if (stored) {
     for (const key of DATA_KEYS) {
       const raw = readRaw(key);
@@ -166,7 +168,7 @@ export function refreshSampleData() {
     }
   }
   try {
-    window.localStorage.setItem(PREFIX + "seedDate", today);
+    window.localStorage.setItem(PREFIX + "seedDate", marker);
   } catch {
     /* ignore */
   }

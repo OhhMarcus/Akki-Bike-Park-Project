@@ -82,7 +82,8 @@ export interface Block {
   end?: HHmm;
   scope: "all" | "pump" | "lessons";
   reason: BlockReason;
-  note?: string;
+  /** staff-typed notes are plain text; seeded sample notes carry both languages */
+  note?: string | LocalizedText;
   closureId?: string;
   /** true for blocks added during the demo (kept when sample data refreshes) */
   userCreated?: boolean;

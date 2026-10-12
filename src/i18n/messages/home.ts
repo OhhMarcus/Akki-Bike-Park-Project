@@ -63,7 +63,7 @@ export const homeMessages = {
   "home.pack.cta": m("{lesson} pack", "{lesson}套票"),
 
   /* photo band */
-  "home.ride.title": m("Trails start *next door*", "*山徑*就喺隔籬"),
+  "home.ride.title": m("*Trails* start next door", "*山徑*就喺隔籬"),
   "home.ride.body": m(
     "Warm up on the pump track, then head out on the trails right next to the park.",
     "喺 Pump Track 熱完身，就出發去樂園隔籬嘅山徑。",

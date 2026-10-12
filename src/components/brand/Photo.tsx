@@ -43,16 +43,16 @@ export function Photo({
       {src ? (
         <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="-z-20 object-cover" />
       ) : (
-        <div role="img" aria-label={alt} className="pattern-dim-bg absolute inset-0 -z-20">
-          {prefs.swapMarkers && (
-            <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-sm border border-dashed border-brand-amber/70 bg-ink/70 px-2 py-1 text-[11px] font-semibold text-brand-amber">
-              <Camera className="h-3.5 w-3.5" aria-hidden />
-              {t("demo.photoSwap", { what })}
-            </span>
-          )}
-        </div>
+        <div role="img" aria-label={alt} className="pattern-dim-bg absolute inset-0 -z-20" />
       )}
       {fade !== "none" && <div aria-hidden className="absolute inset-0 -z-10" style={{ background: fades[fade] }} />}
+      {/* above the fade so it stays readable, below any content placed on the photo */}
+      {!src && prefs.swapMarkers && (
+        <span aria-hidden className="absolute left-3 top-3 z-[-5] inline-flex items-center gap-1.5 rounded-sm border border-dashed border-brand-amber/70 bg-ink/70 px-2 py-1 text-[11px] font-semibold text-brand-amber">
+          <Camera className="h-3.5 w-3.5" />
+          {t("demo.photoSwap", { what })}
+        </span>
+      )}
       {children}
     </div>
   );

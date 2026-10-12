@@ -32,9 +32,64 @@ const NAMES = [
   "周梓軒", "許諾文", "郭芷晴", "蕭子健", "麥浩賢", "曾綺雯", "羅家俊", "葉倩婷", "潘志恒", "Ray Chiu",
 ];
 
+/** Name parts for the casual riders (people who come once or twice). */
+const SURNAMES = [
+  "Chan", "Wong", "Lee", "Cheung", "Lau", "Ho", "Ng", "Leung", "Tam", "Lam", "Yip", "Cheng", "Fung", "Kwok", "Tsang",
+  "Chow", "Mak", "Siu", "Lai", "Poon", "Fok", "Choi", "Lo", "Hui", "Yeung", "Chu", "Ko", "Shum", "Tong", "Ma", "Pang",
+  "Lui", "Tsui", "Kong", "So", "Wan", "Cheuk", "Ip", "Mok", "Chiu", "Kwan", "Tang", "Wu", "Yuen", "Tse", "Chung",
+  "Law", "Sin", "Hung", "Kan", "Au", "Yu", "Chong", "Luk", "To", "Yau",
+];
+const GIVEN_EN = [
+  "Aaron", "Agnes", "Alvin", "Amy", "Andy", "Angus", "Ashley", "Ben", "Bonnie", "Boris", "Calvin", "Carmen", "Chris",
+  "Cyrus", "Derek", "Dicky", "Eddie", "Elaine", "Eric", "Fiona", "Gary", "Gloria", "Gordon", "Heidi", "Henry", "Ian",
+  "Jacky", "Janice", "Jeffrey", "Jenny", "Joey", "Karen", "Katie", "Ken", "Kenny", "Kitty", "Leo", "Leon", "Louis",
+  "Lucas", "Marco", "Max", "Michelle", "Nicole", "Owen", "Peter", "Phoebe", "Rachel", "Raymond", "Ricky", "Ruby",
+  "Simon", "Stanley", "Terence", "Toby", "Venus", "Victor", "Vivian", "Winnie", "Yoyo", "Justin", "Edison", "Ada",
+  "Annie", "Cherry", "Erica", "Hayden", "Jayden", "Ivan", "Gigi", "Sunny", "Samson",
+];
+const GIVEN_YUE = [
+  "Ka Ming", "Hoi Lam", "Tsz Ching", "Chun Hei", "Yat Long", "Hiu Tung", "Lok Yi", "Cheuk Hin", "Man Ho", "Wing Yan",
+  "Sze Wing", "Ka Yan", "Pak Hei", "Tsz Long", "Ho Lam", "Hoi Ching", "Wai Lun", "Kin Wai", "Ka Wai", "Chi Hang",
+  "Hok Yin", "Yan Ting", "Wing Hei", "Sum Yi", "Tsz Hin", "Long Yin", "Ching Yan", "Yik Hei", "Hei Tung", "Pui Shan",
+  "King Lun", "Chun Yin", "Ming Hei", "Sin Yi", "Tin Yau", "Ka Kit",
+];
+const SURNAMES_ZH = ["陳", "黃", "李", "張", "何", "梁", "吳", "林", "鄭", "馮", "周", "許", "郭", "蕭", "麥", "曾", "羅", "葉", "潘", "劉", "楊", "朱", "胡", "鄧", "譚", "盧", "蔡", "余", "杜", "石"];
+const GIVEN_ZH = [
+  "嘉欣", "卓希", "穎欣", "汶希", "朗晴", "家朗", "映彤", "皓軒", "天佑", "心悅", "樂晴", "芷澄", "洛謙", "卓楠", "梓晴",
+  "俊熙", "子謙", "凱晴", "浩霖", "曉彤", "家晴", "頌恩", "澤霖", "柏希", "思穎", "晉軒", "詩琪", "偉傑", "雅琪", "健朗",
+];
+const WESTERN = [
+  "James Smith", "Jack Taylor", "Emma Wilson", "Lucas Moreau", "Mia Thompson", "Ben Clarke", "Ella Wright", "Oliver Brown",
+  "Chris Dunn", "Hana Sato", "Yuki Tanaka", "Arjun Mehta", "Priya Nair", "Jonas Weber", "Lena Fischer", "Tom O'Brien",
+];
+
+/** About a third of bookings come from the regulars (the first NAMES); the rest from casual riders. */
+const REGULARS = NAMES.length;
+const CASUALS = 700;
+const REGULAR_SHARE = 0.32;
+
+function casualNames(): string[] {
+  const r = rng("casual-names");
+  const seen = new Set(NAMES);
+  const out: string[] = [];
+  while (out.length < CASUALS) {
+    const k = r();
+    const name =
+      k < 0.42 ? `${pick(r, GIVEN_EN)} ${pick(r, SURNAMES)}`
+      : k < 0.72 ? `${pick(r, SURNAMES)} ${pick(r, GIVEN_YUE)}`
+      : k < 0.97 ? `${pick(r, SURNAMES_ZH)}${pick(r, GIVEN_ZH)}`
+      : pick(r, WESTERN);
+    if (seen.has(name)) continue;
+    seen.add(name);
+    out.push(name);
+  }
+  return out;
+}
+
 function makeRiders(today: ISODate): Rider[] {
   const used = new Set<string>();
-  return NAMES.map((name, i) => {
+  return [...NAMES, ...casualNames()].map((name, i) => {
+    const regular = i < REGULARS;
     const r = rng(`rider:${i}`);
     const kid = r() < 0.28;
     const age = kid ? 7 + Math.floor(r() * 9) : 16 + Math.floor(r() * 36);
@@ -44,8 +99,19 @@ function makeRiders(today: ISODate): Rider[] {
       phone = `+852 ${pick(r, ["5550", "5551", "5552", "6550", "6551", "9550"])} ${String(Math.floor(r() * 10000)).padStart(4, "0")}`;
     } while (used.has(phone));
     used.add(phone);
-    const experience = weighted<Experience>(r, [["new", 3], ["some", 4], ["regular", 3], ["racer", 1]]);
+    const experience = regular
+      ? weighted<Experience>(r, [["new", 1], ["some", 4], ["regular", 5], ["racer", 2]])
+      : weighted<Experience>(r, [["new", 5], ["some", 4], ["regular", 1], ["racer", 0.3]]);
     const packs: Rider["packs"] = [];
+    if (!regular) {
+      // joined some time in the last ~14 months; trimmed to their first booking once bookings exist
+      return {
+        id: `rdr_${String(i + 1).padStart(3, "0")}`,
+        name, phone, age, heightCm, experience, packs,
+        clubMember: false,
+        createdAt: `${addDays(today, -1 - Math.floor(r() * 420))}T04:00:00.000Z`,
+      };
+    }
     if (i % 9 === 4) {
       const remaining = 1 + Math.floor(r() * 4);
       packs.push({ id: `pack_${i}`, lessonId: "foundation", total: pack5.classes, remaining, purchasedOn: addDays(today, -40 + i), expiresOn: addDays(today, 140 + i) });
@@ -73,19 +139,19 @@ function makeBlocks(today: ISODate, events: ParkEvent[]): Block[] {
   const blocks: Block[] = [];
   for (const e of events) {
     if (e.type === "race" || e.type === "kidscamp") {
-      blocks.push({ id: `blk_${e.id}`, date: e.date, scope: "pump", reason: "event", note: e.title.en });
+      blocks.push({ id: `blk_${e.id}`, date: e.date, scope: "pump", reason: "event", note: e.title });
     } else if (e.type === "nightjam") {
       const start = fromMin(Math.floor(toMin(e.start) / 60) * 60);
-      blocks.push({ id: `blk_${e.id}`, date: e.date, start, end: "21:00", scope: "pump", reason: "event", note: e.title.en });
+      blocks.push({ id: `blk_${e.id}`, date: e.date, start, end: "21:00", scope: "pump", reason: "event", note: e.title });
     }
   }
   // Track maintenance on the Thursday of next week, private hire on a Saturday afternoon in week 3.
   let thu = addDays(today, 7);
   while (weekdayOf(thu) !== 4) thu = addDays(thu, 1);
-  blocks.push({ id: "blk_maint_1", date: thu, start: "15:00", end: "17:00", scope: "pump", reason: "maintenance", note: "Berm resurfacing" });
+  blocks.push({ id: "blk_maint_1", date: thu, start: "15:00", end: "17:00", scope: "pump", reason: "maintenance", note: { en: "Berm resurfacing", zh: "重鋪彎道" } });
   let sat = addDays(today, 15);
   while (weekdayOf(sat) !== 6) sat = addDays(sat, 1);
-  blocks.push({ id: "blk_private_1", date: sat, start: "14:00", end: "16:00", scope: "pump", reason: "private", note: "Private hire: company team day" });
+  blocks.push({ id: "blk_private_1", date: sat, start: "14:00", end: "16:00", scope: "pump", reason: "private", note: { en: "Private hire: company team day", zh: "包場：公司團隊日" } });
   return blocks;
 }
 
@@ -104,9 +170,12 @@ function rentalsFor(r: () => number, riders: number, heights: number[], bikeChan
 
 const bikeCount = (x: Rentals) => Object.values(x.bikes).reduce((s, n) => s + (n ?? 0), 0);
 
-function stamp(date: ISODate, daysBefore: number, r: () => number) {
+/** When a booking was made: `daysBefore` the date it's for, but never later than today. */
+function stamp(date: ISODate, daysBefore: number, r: () => number, today: ISODate) {
   const m = 8 * 60 + Math.floor(r() * 13 * 60);
-  return `${addDays(date, -daysBefore)}T${fromMin(m)}:00.000+08:00`;
+  let day = addDays(date, -daysBefore);
+  if (day > today) day = addDays(today, -(daysBefore % 6));
+  return `${day}T${fromMin(m)}:00.000+08:00`;
 }
 
 export type SeedData = {
@@ -119,6 +188,8 @@ export type SeedData = {
 
 export function generateSeed(today: ISODate): SeedData {
   const riders = makeRiders(today);
+  const pickRider = (r: () => number) =>
+    r() < REGULAR_SHARE ? riders[Math.floor(r() * REGULARS)] : riders[REGULARS + Math.floor(r() * (riders.length - REGULARS))];
   const events = seedEvents(today);
   const blocks = makeBlocks(today, events);
   const bookings: Booking[] = [];
@@ -151,7 +222,7 @@ export function generateSeed(today: ISODate): SeedData {
       while (seats > 0) {
         const group = Math.min(seats, weighted(r, [[1, 45], [2, 30], [3, 15], [4, 10]] as const));
         seats -= group;
-        const rider = riders[Math.floor(r() * riders.length)];
+        const rider = pickRider(r);
         const source: BookingSource = d <= 0
           ? weighted<BookingSource>(r, [["website", 50], ["whatsapp", 24], ["walkin", 26]])
           : weighted<BookingSource>(r, [["website", 66], ["whatsapp", 34]]);
@@ -174,17 +245,17 @@ export function generateSeed(today: ISODate): SeedData {
           attendance: d < 0 ? (r() < 0.92 ? "attended" : "no_show") : "pending",
           priceHKD,
           waiverSigned: true,
-          createdAt: stamp(date, source === "walkin" ? 0 : 1 + Math.floor(r() * 9), r),
+          createdAt: stamp(date, source === "walkin" ? 0 : 1 + Math.floor(r() * 9), r, today),
         });
         n++;
       }
       if (r() < 0.05) {
-        const rider = riders[Math.floor(r() * riders.length)];
+        const rider = pickRider(r);
         bookings.push({
           id: `bk_${slot.id}_x`, ref: makeRef(r), kind: "pump", targetId: slot.id, date, start: slot.start, end: slot.end,
           riderId: rider.id, riderName: rider.name, phone: rider.phone, riders: 1, rentals: { bikes: {}, helmets: 0 },
           source: "website", status: "cancelled", payment: "refunded", attendance: "pending", priceHKD: prices.pumpPerRider,
-          waiverSigned: true, createdAt: stamp(date, 4, r),
+          waiverSigned: true, createdAt: stamp(date, 4, r, today),
         });
       }
     }
@@ -203,7 +274,7 @@ export function generateSeed(today: ISODate): SeedData {
       while (seats > 0) {
         const group = Math.min(seats, weighted(r, [[1, 70], [2, 25], [3, 5]] as const));
         seats -= group;
-        const rider = riders[Math.floor(r() * riders.length)];
+        const rider = pickRider(r);
         const source = weighted<BookingSource>(r, [["website", 45], ["klook", 30], ["whatsapp", 25]]);
         const heights = [rider.heightCm ?? 165, ...Array.from({ length: group - 1 }, () => 125 + Math.round(r() * 60))];
         const rentals = rentalsFor(r, group, heights, s.lessonId === "foundation" ? 0.72 : 0.35, 0.8);
@@ -227,7 +298,7 @@ export function generateSeed(today: ISODate): SeedData {
           usedPack,
           externalRef: source === "klook" ? `KLK-${Math.floor(10000000 + r() * 89999999)}` : undefined,
           waiverSigned: true,
-          createdAt: stamp(date, 2 + Math.floor(r() * 12), r),
+          createdAt: stamp(date, 2 + Math.floor(r() * 12), r, today),
         });
         n++;
       }
@@ -240,7 +311,7 @@ export function generateSeed(today: ISODate): SeedData {
       const count = Math.min(c.capacity, seedRegistrations[c.id] ?? 0);
       const r = rng(`evt:${c.id}`);
       for (let i = 0; i < count; i++) {
-        const rider = riders[Math.floor(r() * riders.length)];
+        const rider = pickRider(r);
         const source = weighted<BookingSource>(r, [["website", 78], ["whatsapp", 22]]);
         bookings.push({
           id: `bk_${e.id}_${c.id}_${i}`,
@@ -258,10 +329,22 @@ export function generateSeed(today: ISODate): SeedData {
           attendance: "pending",
           priceHKD: c.priceHKD,
           waiverSigned: true,
-          createdAt: stamp(e.date, 3 + Math.floor(r() * 20), r),
+          createdAt: stamp(e.date, 3 + Math.floor(r() * 20), r, today),
         });
       }
     }
+  }
+
+  // a casual rider can't have joined after their first booking
+  const first = new Map<string, string>();
+  for (const b of bookings) {
+    const at = new Date(b.createdAt).toISOString();
+    const seen = first.get(b.riderId);
+    if (!seen || at < seen) first.set(b.riderId, at);
+  }
+  for (const rider of riders.slice(REGULARS)) {
+    const at = first.get(rider.id);
+    if (at && at < rider.createdAt) rider.createdAt = at;
   }
 
   return { seedDate: today, riders, bookings, events, blocks };

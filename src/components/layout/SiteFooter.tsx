@@ -21,14 +21,14 @@ export function SiteFooter() {
       <div className="container grid gap-12 py-16 md:grid-cols-12">
         <div className="space-y-5 md:col-span-4">
           <Logo variant="hero" className="max-w-[220px]" />
-          <p className="h-display text-2xl">{t("footer.tagline")}</p>
+          <p className="h-display text-balance text-2xl">{t("footer.tagline")}</p>
           <p className="text-sm text-muted">
             {l(site.location.area)}
             {site.location.placeholder && <Swap />}
           </p>
         </div>
 
-        <nav aria-label={t("nav.footer")} className="grid grid-cols-2 gap-8 md:col-span-4">
+        <nav aria-label={t("nav.footer")} className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-10 gap-y-8 md:col-span-4">
           <div>
             <p className="eyebrow mb-3">{t("footer.ride")}</p>
             <ul className="space-y-2.5 text-[15px]">
@@ -52,8 +52,10 @@ export function SiteFooter() {
                 {site.whatsapp.placeholder && <Swap />}
               </li>
               <li>
-                <a href={`mailto:${site.email.value}`} className="break-all text-fg/85 hover:text-fg">
-                  {site.email.value}
+                <a href={`mailto:${site.email.value}`} className="text-fg/85 [overflow-wrap:anywhere] hover:text-fg">
+                  {/* if it has to wrap, wrap after the @ */}
+                  {site.email.value.split("@")[0]}@<wbr />
+                  {site.email.value.split("@")[1]}
                 </a>
                 {site.email.placeholder && <Swap />}
               </li>

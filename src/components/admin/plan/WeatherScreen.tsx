@@ -18,7 +18,7 @@ import { dateRange, fromMin, toMin, type HKNow } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import type { Block, HHmm, ISODate, Locale, ScheduleSettings, WarningCode } from "@/types";
 import { ClosureCard, ClosureHistory, WarningControl } from "./ClosurePanels";
-import { BookingMiniList, ErrorText, Panel, PlanSkeleton, TimeSelect, Warn, WarningGlyph, formattersFor, halfHours, tally, useWhen } from "./ui";
+import { BookingMiniList, ErrorText, Panel, PlanSkeleton, TimeSelect, Warn, WarningGlyph, formattersFor, halfHours, notOver, tally, useWhen } from "./ui";
 
 /** Warnings that close the park, most common first. */
 const CLOSURE_WARNINGS: WarningCode[] = ["black_rain", "t8", "red_rain", "thunderstorm", "t3"];
@@ -148,10 +148,11 @@ function CloseParkForm({ now, onClosed }: { now: HKNow; onClosed: (id: string) =
   const sessionsClosed = useMemo(() => {
     if (windowError) return 0;
     const candidate: Block[] = [{ id: "preview", date, start, end, scope: "all", reason: "weather" }];
-    const pump = avail.pumpSlots(date).filter((s) => !s.past && s.status !== "closed" && blockFor(date, s.start, s.end, "pump", candidate));
-    const classes = avail.sessions(date).filter((s) => !s.past && s.status !== "closed" && blockFor(date, s.start, s.end, "lessons", candidate));
+    // a session in progress still gets closed, same as the bookings listed for it
+    const pump = avail.pumpSlots(date).filter((s) => notOver(s, now) && s.status !== "closed" && blockFor(date, s.start, s.end, "pump", candidate));
+    const classes = avail.sessions(date).filter((s) => notOver(s, now) && s.status !== "closed" && blockFor(date, s.start, s.end, "lessons", candidate));
     return pump.length + classes.length;
-  }, [avail, date, start, end, windowError]);
+  }, [avail, date, start, end, windowError, now]);
   const sameDay = closures.filter((c) => !c.reopenedAt && c.date === date);
   const hours = hoursOn(date, settings);
 

@@ -36,10 +36,10 @@ export function PackOffer() {
               <li key={lesson.id} className="surface flex flex-col p-5 sm:p-6">
                 <p className="eyebrow">{t(`level.${lesson.level}`)}</p>
                 <h3 className="h3 mt-1.5">{t("lessons.pack.name", { lesson: name })}</h3>
-                <p className="mt-5 flex flex-wrap items-baseline gap-x-2">
+                <p className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1.5">
                   <span className="h-display text-5xl tabular">{fmt.money(price)}</span>
                   <span className="text-sm text-muted">{t("lessons.pack.price", { n: pack5.classes })}</span>
-                  {site.prices.placeholder && <Swap label={t("demo.pricesPlaceholder")} />}
+                  {site.prices.placeholder && <Swap className="ml-0" label={t("demo.pricesPlaceholder")} />}
                 </p>
                 <ul className="mt-5 space-y-2.5 text-sm">
                   {points.map((p, i) => (

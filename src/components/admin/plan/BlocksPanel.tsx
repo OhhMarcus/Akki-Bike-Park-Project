@@ -16,7 +16,7 @@ import { blockFor, hoursOn } from "@/lib/schedule";
 import { addBlock, bookingsAffectedBy, removeBlock } from "@/lib/services";
 import { addDays, fromMin, toMin, type HKNow } from "@/lib/time";
 import type { Block, BlockReason, HHmm, ISODate, ScheduleSettings } from "@/types";
-import { BookingMiniList, DateField, DateTile, ErrorText, Panel, RadioChips, TimeSelect, Warn, halfHours, tally, useWhen } from "./ui";
+import { BookingMiniList, DateField, DateTile, ErrorText, Panel, RadioChips, TimeSelect, Warn, halfHours, notOver, tally, useWhen } from "./ui";
 
 const REASONS: BlockReason[] = ["maintenance", "private", "event", "weather", "other"];
 const SCOPES: Block["scope"][] = ["pump", "lessons", "all"];
@@ -31,20 +31,24 @@ const reasonIcon: Record<BlockReason, typeof Wrench> = {
 };
 
 const byStart = (a: Block, b: Block) => (a.date + (a.start ?? "")).localeCompare(b.date + (b.start ?? ""));
-/** Still ahead: later days, or today with the end time not yet passed. */
-const notOver = (x: { date: ISODate; end?: HHmm }, now: HKNow) => x.date > now.date || (x.date === now.date && (!x.end || toMin(x.end) > now.minutes));
 /** Bookings in a block window that haven't finished yet (riders who still need a heads-up). */
 const clashes = (date: ISODate, start: HHmm | undefined, end: HHmm | undefined, scope: Block["scope"], now: HKNow) =>
   bookingsAffectedBy(date, start, end, scope).filter((b) => notOver(b, now));
 
-function defaultWindow(date: ISODate, settings: ScheduleSettings): { start: HHmm; end: HHmm } {
+function defaultWindow(date: ISODate, settings: ScheduleSettings, now: HKNow): { start: HHmm; end: HHmm } {
   const h = hoursOn(date, settings);
   if (!h.open) return { start: "10:00", end: "12:00" };
-  return { start: h.start, end: fromMin(Math.min(toMin(h.start) + 120, toMin(h.end))) };
+  let s = toMin(h.start);
+  if (date === now.date) {
+    // today: start from the next session that hasn't begun, on the half-hour grid the time pickers use
+    while (s <= now.minutes && s + settings.slotMinutes < toMin(h.end)) s += settings.slotMinutes;
+    s = Math.min(Math.ceil(s / 30) * 30, toMin(h.end) - 30);
+  }
+  return { start: fromMin(s), end: fromMin(Math.min(s + 120, toMin(h.end))) };
 }
 
 export function BlocksPanel({ now }: { now: HKNow }) {
-  const { t, tn } = useI18n();
+  const { t, tn, l } = useI18n();
   const toast = useToast();
   const when = useWhen();
   const [blocks] = useBlocks();
@@ -89,7 +93,7 @@ export function BlocksPanel({ now }: { now: HKNow }) {
                         {b.closureId && <span className="rounded border border-state-closed/50 px-1.5 py-px text-[11px] font-semibold text-state-closed">{t("adminPlan.blocks.fromClosure")}</span>}
                       </p>
                       <p className="mt-0.5 text-sm tabular">{when(b, now.date)}</p>
-                      {b.note && <p className="mt-0.5 truncate text-xs text-muted">{b.note}</p>}
+                      {b.note && <p className="mt-0.5 truncate text-xs text-muted">{typeof b.note === "string" ? b.note : l(b.note)}</p>}
                       {c && c.bookings > 0 && (
                         <Warn className="mt-1">
                           {t("adminPlan.blocks.inside", { count: t("adminPlan.withRiders", { bookings: tn("adminPlan.bookings", c.bookings), riders: tn("riders.count", c.riders) }) })}
@@ -150,7 +154,7 @@ function AddBlockForm({ now }: { now: HKNow }) {
   const avail = useAvailability(now);
   const [date, setDate] = useState<ISODate>(now.date);
   const [mode, setMode] = useState<"day" | "window">("window");
-  const [times, setTimes] = useState(() => defaultWindow(now.date, settings));
+  const [times, setTimes] = useState(() => defaultWindow(now.date, settings, now));
   const [touched, setTouched] = useState(false);
   const [scope, setScope] = useState<Block["scope"]>("pump");
   const [reason, setReason] = useState<BlockReason>("maintenance");
@@ -179,10 +183,11 @@ function AddBlockForm({ now }: { now: HKNow }) {
   const closes = useMemo(() => {
     if (windowError) return { pump: 0, lessons: 0 };
     const candidate: Block[] = [{ id: "preview", date, start, end, scope, reason }];
-    const pump = scope === "lessons" ? 0 : avail.pumpSlots(date).filter((s) => !s.past && s.status !== "closed" && blockFor(date, s.start, s.end, "pump", candidate)).length;
-    const lessonCount = scope === "pump" ? 0 : avail.sessions(date).filter((s) => !s.past && s.status !== "closed" && blockFor(date, s.start, s.end, "lessons", candidate)).length;
+    // count sessions that haven't finished (one in progress still closes), matching the bookings listed below
+    const pump = scope === "lessons" ? 0 : avail.pumpSlots(date).filter((s) => notOver(s, now) && s.status !== "closed" && blockFor(date, s.start, s.end, "pump", candidate)).length;
+    const lessonCount = scope === "pump" ? 0 : avail.sessions(date).filter((s) => notOver(s, now) && s.status !== "closed" && blockFor(date, s.start, s.end, "lessons", candidate)).length;
     return { pump, lessons: lessonCount };
-  }, [avail, date, start, end, scope, reason, windowError]);
+  }, [avail, date, start, end, scope, reason, windowError, now]);
 
   const closesList = [
     closes.pump > 0 ? tn("adminPlan.count.pump", closes.pump) : null,
@@ -191,7 +196,7 @@ function AddBlockForm({ now }: { now: HKNow }) {
 
   const pickDate = (d: ISODate) => {
     setDate(d);
-    if (!touched) setTimes(defaultWindow(d, settings));
+    if (!touched) setTimes(defaultWindow(d, settings, now));
   };
   const setTime = (patch: Partial<{ start: HHmm; end: HHmm }>) => {
     setTouched(true);
@@ -206,7 +211,7 @@ function AddBlockForm({ now }: { now: HKNow }) {
     // fresh form, so the same block isn't added twice by accident
     setDate(now.date);
     setMode("window");
-    setTimes(defaultWindow(now.date, settings));
+    setTimes(defaultWindow(now.date, settings, now));
     setTouched(false);
     setScope("pump");
     setReason("maintenance");

@@ -11,7 +11,7 @@ import { Select } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEvents } from "@/lib/hooks";
 import { bookingTitle } from "@/lib/labels";
-import { addDays, fromMin, hkNow, parts, toMin } from "@/lib/time";
+import { addDays, fromMin, hkNow, parts, toMin, type HKNow } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import type { Booking, HHmm, ISODate, Locale, LocalizedText, WarningCode } from "@/types";
 
@@ -24,6 +24,9 @@ export function formattersFor(locale: Locale) {
 }
 
 /** Bookings, riders and distinct phone numbers in a list. */
+/** Still to come or in progress (anything without an end runs all day). */
+export const notOver = (x: { date: ISODate; end?: HHmm }, now: HKNow) => x.date > now.date || (x.date === now.date && (!x.end || toMin(x.end) > now.minutes));
+
 export function tally(bookings: Booking[]) {
   return {
     bookings: bookings.length,

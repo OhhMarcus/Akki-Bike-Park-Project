@@ -70,8 +70,8 @@ export function NextSessions({ lessonId, lessonName }: { lessonId: LessonId; les
               <>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm">
-                    <span className="font-semibold">{fmt.relDay(s.date, now.date)}</span>
-                    <span className="text-muted"> · {t(`tlang.${s.language}`)}</span>
+                    <span className="font-semibold">{fmt.relDay(s.date, now.date)}</span>{" "}
+                    <span className="whitespace-nowrap text-muted">· {t(`tlang.${s.language}`)}</span>
                   </span>
                   <span className="mt-0.5 block text-xs text-muted tabular">{fmt.timeRange(s.start, s.end)}</span>
                 </span>

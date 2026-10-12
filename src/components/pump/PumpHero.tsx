@@ -34,13 +34,10 @@ export function PumpHero() {
           <p className="eyebrow">{t("pump.eyebrow")}</p>
           <Headline text={t("pump.title")} as="h1" className="h1" brush />
           <p className="max-w-xl text-base leading-relaxed text-fg/80 sm:text-lg">{t("pump.lead")}</p>
-          {/* phones: one swipeable row so the date strip stays near the top; sm+: four tiles */}
-          <dl
-            aria-label={t("pump.facts")}
-            className="no-scrollbar -mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 sm:pt-2"
-          >
+          {/* phones: 2×2 so every fact is visible at once; sm+: one row of four */}
+          <dl aria-label={t("pump.facts")} className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4 sm:pt-2">
             {facts.map((f) => (
-              <div key={f.label} className="w-[156px] shrink-0 snap-start rounded-lg border border-line bg-ink/75 px-3 py-2.5 sm:w-auto">
+              <div key={f.label} className="min-w-0 rounded-lg border border-line bg-ink/75 px-3 py-2.5">
                 <dt className="text-xs font-semibold text-muted">{f.label}</dt>
                 <dd className="mt-1.5 flex flex-wrap items-center">
                   <span className="h-display text-[22px] tabular sm:text-2xl">{f.value}</span>
