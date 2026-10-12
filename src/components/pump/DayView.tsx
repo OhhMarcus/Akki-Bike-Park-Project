@@ -23,6 +23,24 @@ type Notice =
   | { kind: "full" }
   | { kind: "closed"; reason: BlockReason; event?: ParkEvent };
 
+type Item = { kind: "slot"; slot: SlotView } | { kind: "closed"; slots: SlotView[]; reason: BlockReason };
+
+/** Back-to-back closed sessions with the same reason become one card (e.g. a night jam's 7–9pm). */
+function groupClosed(slots: SlotView[]): Item[] {
+  const out: Item[] = [];
+  for (const s of slots) {
+    if (s.status !== "closed") {
+      out.push({ kind: "slot", slot: s });
+      continue;
+    }
+    const reason = s.closedReason ?? "other";
+    const last = out[out.length - 1];
+    if (last?.kind === "closed" && last.reason === reason && last.slots[last.slots.length - 1].end === s.start) last.slots.push(s);
+    else out.push({ kind: "closed", slots: [s], reason });
+  }
+  return out;
+}
+
 /** Why a day has nothing to book, or null when it has open sessions. */
 function dayNotice(slots: SlotView[], events: ParkEvent[]): Notice | null {
   if (!slots.length) return { kind: "rest" };
@@ -58,7 +76,7 @@ export function DayView({
   const rel = diffDays(today, selected);
   const showList = live.length > 0 && (!notice || notice.kind === "full");
 
-  const nextAction = openDay ? (
+  const jumpAction = openDay ? (
     <Button variant="secondary" onClick={() => onSelect(openDay)}>
       {openDay < selected && <ArrowLeft className="h-4 w-4" aria-hidden />}
       {t(openDay > selected ? "pump.next" : "pump.nearest", { date: fmt.dateWeekday(openDay) })}
@@ -96,21 +114,25 @@ export function DayView({
         </div>
 
         {notice?.kind === "closed" ? (
-          <ClosedDay reason={notice.reason} event={notice.event} action={nextAction} />
+          <ClosedDay reason={notice.reason} event={notice.event} action={jumpAction} />
         ) : notice ? (
           <EmptyState
             className="mt-4"
             title={t(`pump.empty.${notice.kind}.title`)}
             body={notice.kind === "rest" ? t("pump.empty.rest.body", { day: fmt.weekday(selected, "long") }) : t(`pump.empty.${notice.kind}.body`)}
-            action={nextAction}
+            action={jumpAction}
           />
         ) : null}
 
         {showList && (
           <ul className="mt-3 grid gap-2 md:grid-cols-2">
-            {live.map((s) => (
-              <SlotCard key={s.id} slot={s} events={events} onOpen={onOpen} />
-            ))}
+            {groupClosed(live).map((item) =>
+              item.kind === "slot" ? (
+                <SlotCard key={item.slot.id} slot={item.slot} onOpen={onOpen} />
+              ) : (
+                <ClosedCard key={item.slots[0].id} slots={item.slots} reason={item.reason} events={events} />
+              ),
+            )}
           </ul>
         )}
         {done > 0 && live.length > 0 && <p className="mt-3 text-xs text-muted">{tn("pump.earlier", done)}</p>}
