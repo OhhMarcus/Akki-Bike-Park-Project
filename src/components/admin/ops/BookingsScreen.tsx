@@ -143,7 +143,7 @@ export function BookingsScreen({ initial }: { initial: BookingsQuery }) {
       b.date, b.start, b.end, b.ref, b.riderName, b.phone, [title(b), detail(b)].filter(Boolean).join(" · "), b.riders,
       rentalsText(b.rentals, { t, tn }) ?? "", t(`source.${b.source}`), b.externalRef ?? "",
       t(b.status === "cancelled" ? "booking.cancelled" : b.flag ? "booking.flagged" : "booking.confirmed"),
-      t(`pay.${b.payment}`), t(`att.${b.attendance}`), b.priceHKD, b.notes ?? "",
+      t(`pay.${b.payment}`), b.status === "cancelled" ? "" : t(`att.${b.attendance}`), b.priceHKD, b.notes ?? "",
     ]);
     const csv = [head, ...body].map((r) => r.map(csvCell).join(",")).join("\r\n");
     downloadFile(`akki-bookings-${today ?? "export"}.csv`, `﻿${csv}`, "text/csv");
