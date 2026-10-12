@@ -352,8 +352,6 @@ function SheetBody({ target, now, onClose, onSwitch }: { target: SheetTarget; no
       footer={footer}
       // wide: the rental sizes grid and the confirmation's three buttons need the room on sm+
       wide
-      // centred on sm+: a transform-based entrance animation would cancel the -50% centring translate
-      className="sm:data-[state=open]:animate-none"
     >
       {body}
     </Sheet>
