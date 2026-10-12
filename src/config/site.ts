@@ -15,7 +15,8 @@ import type { LocalizedText } from "@/types";
 
 export const site = {
   name: { en: "AKKI Bike Park", zh: "丫髻山地單車樂園" } as LocalizedText,
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  /** set in next.config.mjs: NEXT_PUBLIC_SITE_URL, else the Vercel address, else localhost */
+  url: process.env.AKKI_SITE_URL ?? "http://localhost:3000",
 
   location: {
     placeholder: true,

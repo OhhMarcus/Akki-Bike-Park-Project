@@ -80,6 +80,12 @@ supabase/schema.sql  matching Postgres schema for the real thing
 - **Weather**: replace `src/lib/weather.ts` with the HK Observatory open data API (current weather + warning summary).
 - **Login**: add staff accounts with roles before `/admin` goes live.
 
-## Deploy
+## Deploy (put the demo online)
 
-Push to GitHub, import into Vercel (Next.js preset, no overrides). Set `NEXT_PUBLIC_SITE_URL` to the production URL.
+1. Sign in at [vercel.com](https://vercel.com) with GitHub.
+2. **Add New → Project**, import `OhhMarcus/Akki-Bike-Park-Project`, keep the Next.js preset and every default, and click **Deploy**.
+3. The site is live at `https://<project-name>.vercel.app` (dashboard at `/admin`). Every push to the branch redeploys.
+
+No environment variables are needed: share links, canonical tags and link previews use the Vercel address automatically. Set `NEXT_PUBLIC_SITE_URL` once there is a custom domain. While the demo shows placeholder prices and contact details it sends `noindex`, so search engines skip it; set `SITE_INDEXABLE=true` for the real launch.
+
+Demo data lives in each visitor's browser: a booking made on one device shows in the admin on that same browser, not on other devices.
