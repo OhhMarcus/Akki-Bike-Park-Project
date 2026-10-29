@@ -23,7 +23,7 @@ The admin opens straight into demo mode at **http://localhost:3000/admin** (no l
 ## 5-minute demo script
 
 1. **Home**: the hero status card is live: open/closed, temperature, HK Observatory warning, next free session, countdown to the next race. Toggle **EN / 繁** in the nav (instant, remembered).
-2. **Pump Track**: swipe the 14-day strip (phone) or use the week grid (desktop). Tap a slot → riders + rentals → pay (mock FPS / PayMe / card) → confirmed, usually in well under 30 seconds.
+2. **Pump Track**: swipe the 14-day strip (phone) or use the week grid (desktop). Tap a slot → riders + rentals → pay (mock FPS / PayMe) → confirmed, usually in well under 30 seconds.
 3. **Lessons**: Foundation or Advanced → available dates highlighted → "3 of 8 left" time slots → rider details (height → bike size) → waiver signed with a finger → mock payment → confirmation with add-to-calendar and WhatsApp. The 5-class pack is offered at step one.
 4. **Admin → Today**: the booking you just made is in today's roster with rental bikes by size.
 5. **Admin → Add booking**: enter a Klook or WhatsApp booking into the same calendar; try to overbook a full slot and see it blocked.
@@ -74,7 +74,7 @@ supabase/schema.sql  matching Postgres schema for the real thing
 ### Connecting the real services later
 
 - **Database**: create the tables in `supabase/schema.sql`. Replace `getState`/`setState` in `src/lib/store.ts` with API calls of the same shapes, and run the `services.ts` checks inside a transaction (`select … for update` on the slot) so concurrent bookings can't overbook.
-- **Payments**: `PaymentPicker` is the seam. Create the payment intent server-side (Stripe for cards/Apple Pay/Google Pay; PayMe for Business; FPS via the bank's QR), confirm by webhook, then mark the booking paid. The demo never collects card numbers.
+- **Payments**: `PaymentPicker` is the seam. Create the payment intent server-side (PayMe for Business; FPS via the bank's QR), confirm by webhook, then mark the booking paid.
 - **WhatsApp**: confirmations and weather-closure messages map to WhatsApp Business Platform templates (one EN, one 繁中); the closure screen already produces both texts.
 - **Klook**: bookings carry `source` and `externalRef`; a Klook channel-manager feed or manual entry in Admin → Add booking keeps them in the same capacity pool.
 - **Weather**: replace `src/lib/weather.ts` with the HK Observatory open data API (current weather + warning summary).

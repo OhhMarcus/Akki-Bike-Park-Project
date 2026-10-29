@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CreditCard, Loader2, Lock, QrCode, Smartphone } from "lucide-react";
+import { Loader2, Lock, QrCode, Smartphone } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import { rng } from "@/lib/prng";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export type PayMethod = "fps" | "payme" | "card";
+export type PayMethod = "fps" | "payme";
 
 /** Non-scannable sample QR (looks right, pays nothing). */
 function FakeQR({ seed, label }: { seed: string; label: string }) {
@@ -39,9 +39,9 @@ function FakeQR({ seed, label }: { seed: string; label: string }) {
 }
 
 /**
- * Mock checkout: FPS, PayMe, card. Nothing is charged and no card data is
- * collected. Production: create a payment intent server-side and use the
- * provider's hosted fields / QR (Stripe, PayMe for Business, FPS via bank).
+ * Mock checkout: FPS or PayMe. Nothing is charged. Production: create the
+ * payment server-side and show the provider's QR (PayMe for Business, FPS via
+ * the bank), then confirm by webhook.
  */
 export function PaymentPicker({
   amount, onPay, payLabel, seed = "akki", disabled,
@@ -59,7 +59,6 @@ export function PaymentPicker({
   const methods: { id: PayMethod; label: string; hint: string; Icon: typeof QrCode }[] = [
     { id: "fps", label: t("book.pay.fps"), hint: t("book.pay.fpsHint"), Icon: QrCode },
     { id: "payme", label: t("book.pay.payme"), hint: t("book.pay.paymeHint"), Icon: Smartphone },
-    { id: "card", label: t("book.pay.card"), hint: t("book.pay.cardHint"), Icon: CreditCard },
   ];
 
   const pay = () => {
@@ -84,7 +83,7 @@ export function PaymentPicker({
         <>
           <fieldset>
             <legend className="mb-2 text-sm font-medium">{t("book.pay.method")}</legend>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {methods.map(({ id, label, Icon }) => {
                 const active = method === id;
                 return (
@@ -105,22 +104,9 @@ export function PaymentPicker({
           </fieldset>
 
           <div className="surface flex min-h-[200px] flex-col items-center justify-center gap-3 p-4 text-center">
-            {method === "card" ? (
-              <div className="w-full max-w-xs space-y-2 text-left" aria-disabled>
-                <div className="field flex items-center text-muted">{t("book.pay.cardNumber")} · 4242 4242 4242 4242</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="field flex items-center text-muted">{t("book.pay.cardExpiry")}</div>
-                  <div className="field flex items-center text-muted">{t("book.pay.cardCvc")}</div>
-                </div>
-                <p className="pt-1 text-xs leading-relaxed text-muted">{t("book.pay.cardSecure")}</p>
-              </div>
-            ) : (
-              <>
-                <FakeQR seed={`${seed}-${method}-${amount}`} label={t("book.pay.qrAlt")} />
-                <p className="text-xs text-muted">{methods.find((m) => m.id === method)!.hint}</p>
-                <p className="text-xs text-muted">{t("book.pay.payee")}</p>
-              </>
-            )}
+            <FakeQR seed={`${seed}-${method}-${amount}`} label={t("book.pay.qrAlt")} />
+            <p className="text-xs text-muted">{methods.find((m) => m.id === method)!.hint}</p>
+            <p className="text-xs text-muted">{t("book.pay.payee")}</p>
           </div>
         </>
       )}

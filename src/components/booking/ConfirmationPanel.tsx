@@ -1,6 +1,7 @@
 "use client";
 
-import { CalendarPlus, Check, Download } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, CalendarPlus, Check, Download, LayoutDashboard } from "lucide-react";
 import { site } from "@/config/site";
 import { useI18n } from "@/i18n/provider";
 import type { Booking } from "@/types";
@@ -14,7 +15,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Booking confirmation: ref, when/where/who, add-to-calendar (.ics + Google),
- * WhatsApp the park with the booking prefilled.
+ * WhatsApp the park with the booking prefilled, and (demo) a link that opens
+ * the same booking in the staff dashboard.
  */
 export function ConfirmationPanel({
   booking, title, seconds, actions, className,
@@ -111,6 +113,18 @@ export function ConfirmationPanel({
           {t("book.done.whatsapp")}
         </a>
       </div>
+      <Link
+        href={`/admin/bookings?q=${encodeURIComponent(booking.ref)}`}
+        target="_blank"
+        className="group flex items-center gap-3 rounded-lg border border-dashed border-brand-amber/60 bg-brand-amber/10 p-3 text-brand-amber transition-colors hover:bg-brand-amber/15"
+      >
+        <LayoutDashboard className="h-5 w-5 shrink-0" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold">{t("book.done.admin")}</span>
+          <span className="block text-xs text-brand-amber/80">{t("book.done.adminNote")}</span>
+        </span>
+        <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
+      </Link>
       {actions}
     </div>
   );
